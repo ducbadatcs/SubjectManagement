@@ -1,32 +1,46 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SubjectManagement
 {
     public partial class Form1 : Form
     {
+        public void ShowException(Exception ex, string sqlCommand = "")
+        {
+            string error = "";
 
+            if (sqlCommand.Length > 0)
+            {
+                error += "Error while trying to execute SQL Command: " + sqlCommand + "\n\n";
+            }
+            // this is 1000000 times better than pasting this exact same code everywhere
+            error += @"Message:" + ex.Message + "\n\nStack Trace:" + ex.StackTrace;
+            MessageBox.Show(
+                error, "Error");
+            StreamWriter writer = new StreamWriter("error.txt");
+            writer.WriteLine(error);
+            writer.Close();
+        }
 
         public Form1()
         {
+            //SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
-            using (var connection = new SqliteConnection("Data Source=hello.db"))
+            using (var connection = new SQLiteConnection("Data Source=hello.db"))
             {
+                // assign source for the grid
+
+                dataGridSubjects.DataSource = connection;
+
                 connection.Open();
 
+                Table subjectTable = new SubjectTable();
+
                 var createTableCommand = connection.CreateCommand();
-                createTableCommand.CommandText =
-                @"
-                    CREATE TABLE IF NOT EXISTS subjects(
-                        ID TEXT PRIMARY KEY NOT NULL,
-                        NAME TEXT NOT NULL,
-                        NUMBER_OF_CREDITS INT NOT NULL,
-                        REQUIRED_NUMBER_OF_CREDITS INT NOT NULL,
-                        REQUIRED_SUBJECTS TEXT NOT NULL
-                    );
-                ";
+                createTableCommand.CommandText = subjectTable.CreateTableCommand;
 
                 try
                 {
@@ -34,8 +48,7 @@ namespace SubjectManagement
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Message:", ex.Message);
-                    MessageBox.Show("\nStack Trace:", ex.StackTrace);
+                    ShowException(ex, createTableCommand.CommandText);
                 }
 
 
@@ -57,11 +70,7 @@ namespace SubjectManagement
                 };
 
                 var insertCommand = connection.CreateCommand();
-                insertCommand.CommandText =
-                @"
-                    INSERT INTO subjects(ID, NAME, NUMBER_OF_CREDITS, REQUIRED_NUMBER_OF_CREDITS, REQUIRED_SUBJECTS)
-                    VALUES ($id, $name, $number_of_credits, $required_number_of_credits, $required_subjects_ids)
-                ";
+                insertCommand.CommandText = subjectTable.InsertIntoTableCommand;
 
                 foreach (Subject subject in ls)
                 {
@@ -77,14 +86,61 @@ namespace SubjectManagement
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Message:", ex.Message);
-                        MessageBox.Show("\nStack Trace:", ex.StackTrace);
+                        ShowException(ex, insertCommand.CommandText);
                     }
                 }
+                connection.Close();
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonShowSubjects_Click(object sender, EventArgs e)
+        {
+            using (var connection = new SQLiteConnection("Data Source=hello.db"))
+            {
+                connection.Open();
+
+                var readCommand = connection.CreateCommand();
+                readCommand.CommandText =
+                @"
+                    SELECT * FROM subjects
+                ";
+
+                List<Subject> subjectList = new List<Subject>();
+
+                try
+                {
+                    var reader = readCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        subjectList.Add(new Subject(
+                            reader["ID"].ToString(),
+                            reader["NAME"].ToString(),
+                            int.Parse(reader["NUMBER_OF_CREDITS"].ToString()),
+                            int.Parse(reader["REQUIRED_NUMBER_OF_CREDITS"].ToString())
+                        // don't worry we construct the list later
+                        ));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ShowException(ex);
+                }
+
+                foreach (Subject subject in subjectList)
+                {
+
+                }
+
+                connection.Close();
+            }
+        }
+
+        private void dataGridSubjects_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

@@ -5,14 +5,16 @@ namespace SubjectManagement
     public class Student
     {
         private string _name;
-        private int _finishedCredits;
+        //private double _finishedCredits;
 
         private List<Subject> _finishedSubjects;
 
-        public Student(string name, int finishedCredits)
+        public Student(string name, List<Subject> finishedSubjects)
         {
             this._name = name;
-            this._finishedCredits = finishedCredits;
+            //this._finishedCredits = finishedCredits;
+            this._finishedSubjects = finishedSubjects;
+
         }
 
         public string Name
@@ -21,16 +23,23 @@ namespace SubjectManagement
             set { this._name = value; }
         }
 
-        public int FinishedCredits
-        {
-            get { return this._finishedCredits; }
-            set { this._finishedCredits = value; }
-        }
-
         public List<Subject> FinishedSubjects
         {
             get { return this._finishedSubjects; }
             set { this._finishedSubjects = value; }
+        }
+
+        public double NumberOfCreditsFinished
+        {
+            get
+            {
+                double totalCredits = 0.0;
+                foreach (Subject subject in this._finishedSubjects)
+                {
+                    totalCredits += subject.NumberOfCredits;
+                }
+                return totalCredits;
+            }
         }
 
         public bool IsEligibleFor(Subject subject)
@@ -42,7 +51,7 @@ namespace SubjectManagement
                     return false;
                 }
             }
-            return this._finishedCredits >= subject.RequiredNumberOfCredits;
+            return this.NumberOfCreditsFinished >= subject.RequiredNumberOfCredits;
         }
     }
 }
