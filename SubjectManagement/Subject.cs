@@ -69,5 +69,16 @@ namespace SubjectManagement
                 return x;
             }
         }
+
+        /// <summary>
+        /// why
+        /// </summary>
+        public List<object> ObjectList
+        {
+            get
+            {
+                return new List<object>() { this._id, this._name, this._numberOfCredits, this._requiredNumberOfCredits, this.RequiredSubjectsIDs };
+            }
+        }
     }
 }

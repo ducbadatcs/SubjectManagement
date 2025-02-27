@@ -41,7 +41,7 @@ namespace SubjectManagement
                 SubjectTable subjectTable = new SubjectTable();
 
                 var createTableCommand = connection.CreateCommand();
-                createTableCommand.CommandText = subjectTable.CreateTableCommand;
+                createTableCommand.CommandText = subjectTable.CreateCommand;
 
                 try
                 {
@@ -77,11 +77,11 @@ namespace SubjectManagement
 
                     try
                     {
-                        subjectTable.AddSubject(subject);
+                        subjectTable.InsertSubject(subject);
                     }
                     catch (Exception ex)
                     {
-                        ShowException(ex, subjectTable.InsertIntoTableCommand);
+                        ShowException(ex, subjectTable.InsertCommand(subject.ObjectList));
                     }
                 }
                 connection.Close();
@@ -140,27 +140,18 @@ namespace SubjectManagement
 
         private void buttonClearTable_Click(object sender, EventArgs e)
         {
-            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
+            SubjectTable subjectTable = new SubjectTable();
+
+            try
             {
-                connection.Open();
-
-                SubjectTable subjectTable = new SubjectTable();
-
-                var clearCommand = connection.CreateCommand();
-                clearCommand.CommandText = subjectTable.ClearTableCommand;
-                try
-                {
-                    clearCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    ShowException(ex, clearCommand.CommandText);
-                }
-
-                connection.Close();
+                subjectTable.ClearTable();
+            }
+            catch (Exception ex)
+            {
+                ShowException(ex, subjectTable.CreateCommand);
             }
 
-            var temp = dataGridSubjects.DataSource;
+
             dataGridSubjects.DataSource = null; // ah yes
             dataGridSubjects.Rows.Clear();
             dataGridSubjects.Refresh();
