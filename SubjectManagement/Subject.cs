@@ -64,7 +64,7 @@ namespace SubjectManagement
                 string x = "";
                 foreach (Subject subject in this._requiredSubjects)
                 {
-                    x += subject.Name + " ";
+                    x += subject.Id + " ";
                 }
                 return x;
             }

@@ -23,13 +23,14 @@ namespace SubjectManagement
             StreamWriter writer = new StreamWriter("error.txt");
             writer.WriteLine(error);
             writer.Close();
+            Application.Exit();
         }
 
         public Form1()
         {
             //SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
-            using (var connection = new SQLiteConnection("Data Source=hello.db"))
+            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
             {
                 // assign source for the grid
 
@@ -37,7 +38,7 @@ namespace SubjectManagement
 
                 connection.Open();
 
-                Table subjectTable = new SubjectTable();
+                SubjectTable subjectTable = new SubjectTable();
 
                 var createTableCommand = connection.CreateCommand();
                 createTableCommand.CommandText = subjectTable.CreateTableCommand;
@@ -69,24 +70,18 @@ namespace SubjectManagement
                     })
                 };
 
-                var insertCommand = connection.CreateCommand();
-                insertCommand.CommandText = subjectTable.InsertIntoTableCommand;
+
 
                 foreach (Subject subject in ls)
                 {
-                    insertCommand.Parameters.AddWithValue("$id", subject.Id);
-                    insertCommand.Parameters.AddWithValue("$name", subject.Name);
-                    insertCommand.Parameters.AddWithValue("$number_of_credits", subject.NumberOfCredits.ToString());
-                    insertCommand.Parameters.AddWithValue("$required_number_of_credits", subject.RequiredNumberOfCredits.ToString());
-                    insertCommand.Parameters.AddWithValue("$required_subjects_ids", subject.RequiredSubjectsIDs);
 
                     try
                     {
-                        insertCommand.ExecuteScalar();
+                        subjectTable.AddSubject(subject);
                     }
                     catch (Exception ex)
                     {
-                        ShowException(ex, insertCommand.CommandText);
+                        ShowException(ex, subjectTable.InsertIntoTableCommand);
                     }
                 }
                 connection.Close();
@@ -100,7 +95,7 @@ namespace SubjectManagement
 
         private void buttonShowSubjects_Click(object sender, EventArgs e)
         {
-            using (var connection = new SQLiteConnection("Data Source=hello.db"))
+            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
             {
                 connection.Open();
 
@@ -117,32 +112,63 @@ namespace SubjectManagement
                     var reader = readCommand.ExecuteReader();
                     while (reader.Read())
                     {
-                        subjectList.Add(new Subject(
+                        Subject s = new Subject(
                             reader["ID"].ToString(),
                             reader["NAME"].ToString(),
                             int.Parse(reader["NUMBER_OF_CREDITS"].ToString()),
                             int.Parse(reader["REQUIRED_NUMBER_OF_CREDITS"].ToString())
                         // don't worry we construct the list later
-                        ));
+                        );
+                        subjectList.Add(s);
                     }
                 }
+
                 catch (Exception ex)
                 {
                     ShowException(ex);
                 }
 
-                foreach (Subject subject in subjectList)
-                {
+                dataGridSubjects.DataSource = subjectList;
 
-                }
+                // double check
 
+
+                dataGridSubjects.Refresh();
                 connection.Close();
             }
         }
 
-        private void dataGridSubjects_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void buttonClearTable_Click(object sender, EventArgs e)
         {
+            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
+            {
+                connection.Open();
 
+                SubjectTable subjectTable = new SubjectTable();
+
+                var clearCommand = connection.CreateCommand();
+                clearCommand.CommandText = subjectTable.ClearTableCommand;
+                try
+                {
+                    clearCommand.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    ShowException(ex, clearCommand.CommandText);
+                }
+
+                connection.Close();
+            }
+
+            var temp = dataGridSubjects.DataSource;
+            dataGridSubjects.DataSource = null; // ah yes
+            dataGridSubjects.Rows.Clear();
+            dataGridSubjects.Refresh();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("why are you clicking this nonsense you fucking dumbass");
         }
     }
 }

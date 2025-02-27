@@ -12,7 +12,7 @@ namespace SubjectManagement
                     {"NAME", "TEXT"},
                     {"NUMBER_OF_CREDITS", "REAL" },
                     {"REQUIRED_NUMBER_OF_CREDITS", "REAL" },
-                    {"REQUIRED_SUBJECTS", "TEXT" }
+                    {"REQUIRED_SUBJECTS_IDS", "TEXT" }
             })
         { }
 
@@ -23,13 +23,18 @@ namespace SubjectManagement
                 connection.Open();
 
                 var insertCommand = connection.CreateCommand();
+
+                insertCommand.CommandText = this.InsertIntoTableCommand;
+                //string s = insertCommand.CommandText;
                 insertCommand.Parameters.AddWithValue("$id", subject.Id);
                 insertCommand.Parameters.AddWithValue("$name", subject.Name);
                 insertCommand.Parameters.AddWithValue("$number_of_credits", subject.NumberOfCredits.ToString());
                 insertCommand.Parameters.AddWithValue("$required_number_of_credits", subject.RequiredNumberOfCredits.ToString());
                 insertCommand.Parameters.AddWithValue("$required_subjects_ids", subject.RequiredSubjectsIDs);
 
-                insertCommand.ExecuteNonQuery();
+                string s = insertCommand.CommandText;
+
+                insertCommand.ExecuteScalar();
 
                 connection.Close();
             }

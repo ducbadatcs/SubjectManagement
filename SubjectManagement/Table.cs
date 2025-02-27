@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Data.SQLite;
 namespace SubjectManagement
 {
     // make this out of pure convenience
@@ -12,7 +12,6 @@ namespace SubjectManagement
         {
             this._name = name;
             this._fields = new Dictionary<string, string>() { };
-
 
             // consistency is key
 
@@ -62,35 +61,64 @@ namespace SubjectManagement
             }
         }
 
-        public string InsertIntoTableCommand
+        public List<string> ColumnPlaceholdersList
         {
             get
             {
-
-
-                // whatever, it's basically a collection of strings anyway
-                var keys = this._fields.Keys;
-
                 List<string> valuePlaceholdersList = new List<string>();
-                foreach (string key in keys)
+                foreach (string key in this._fields.Keys)
                 {
                     valuePlaceholdersList.Add("$" + key.ToLower());
                 }
 
-                string valuePlaceholders = string.Join(", ", valuePlaceholdersList);
-
-                // having double quotes in a formatted string, 500 IQ move
-                string fieldNamesConcatenated = string.Join(", ", this._fields.Keys);
-                return $@"INSERT OR REPLACE INTO {this._name}({fieldNamesConcatenated}) VALUES ({valuePlaceholders});";
+                return valuePlaceholdersList;
             }
         }
 
-        public string DeleteTableCommand
+        public string InsertIntoTableCommand
+        {
+            get
+            {
+                // whatever, it's basically a collection of strings anyway
+                var keys = this._fields.Keys;
+
+                string valuePlaceholders = string.Join(", ", this.ColumnPlaceholdersList);
+
+                // having double quotes in a formatted string, 500 IQ move
+                string fieldNamesConcatenated = string.Join(", ", this._fields.Keys);
+                return $@"INSERT OR REPLACE INTO {this._name}({fieldNamesConcatenated}) VALUES ({this.ColumnPlaceholdersList});";
+            }
+        }
+
+        public string ClearTableCommand
         {
             get
             {
                 return $"DELETE FROM {this._name}; VACUUM";
             }
         }
+
+        public string InsertObjectCommand(List<object> valueList)
+        {
+            if (valueList == null || valueList.Count != this._fields.Count)
+            {
+                return "";
+            }
+            List<string> paramValues = new List<string>();
+            foreach (object value in valueList)
+            {
+                paramValues.Add(value.ToString());
+            }
+
+            using (var connection = new SQLiteConnection($"Data Source={this.Name}.db"))
+            {
+                connection.Open();
+                var insertObjectCommand = connection.CreateCommand();
+                for (int i = 0;)
+
+                    connection.Close();
+            }
+        }
+
     }
 }
