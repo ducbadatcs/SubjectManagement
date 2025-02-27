@@ -4,12 +4,6 @@ namespace SubjectManagement
 {
     public class Subject
     {
-        private string _id, _name;
-
-        private int _numberOfCredits, _requiredNumberOfCredits;
-
-        private List<Subject> _requiredSubjects;
-
         public Subject() { }
 
         public Subject(
@@ -20,49 +14,29 @@ namespace SubjectManagement
             List<Subject> requiredSubjects = null
         )
         {
-            this._id = id;
-            this._name = name;
-            this._numberOfCredits = numberOfCredits;
-            this._requiredNumberOfCredits = requiredCredits;
-            this._requiredSubjects = requiredSubjects ?? new List<Subject>();
+            this.Id = id;
+            this.Name = name;
+            this.NumberOfCredits = numberOfCredits;
+            this.RequiredNumberOfCredits = requiredCredits;
+            this.RequiredSubjects = requiredSubjects ?? new List<Subject>();
         }
 
-        public string Id
-        {
-            get { return this._id; }
-            set { this._id = value; }
-        }
+        public string Id { get; set; }
 
-        public string Name
-        {
-            get { return this._name; }
-            set { this._name = value; }
-        }
+        public string Name { get; set; }
 
-        public int NumberOfCredits
-        {
-            get { return this._numberOfCredits; }
-            set { this._numberOfCredits = value; }
-        }
+        public int NumberOfCredits { get; set; }
 
-        public int RequiredNumberOfCredits
-        {
-            get { return this._requiredNumberOfCredits; }
-            set { this._requiredNumberOfCredits = value; }
-        }
+        public int RequiredNumberOfCredits { get; set; }
 
-        public List<Subject> RequiredSubjects
-        {
-            get { return this._requiredSubjects; }
-            set { this._requiredSubjects = value; }
-        }
+        public List<Subject> RequiredSubjects { get; set; }
 
         public string RequiredSubjectsIDs
         {
             get
             {
                 string x = "";
-                foreach (Subject subject in this._requiredSubjects)
+                foreach (Subject subject in this.RequiredSubjects)
                 {
                     x += subject.Id + " ";
                 }
@@ -73,11 +47,17 @@ namespace SubjectManagement
         /// <summary>
         /// why
         /// </summary>
-        public List<object> ObjectList
+        public Dictionary<string, object> ObjectList
         {
             get
             {
-                return new List<object>() { this._id, this._name, this._numberOfCredits, this._requiredNumberOfCredits, this.RequiredSubjectsIDs };
+                Dictionary<string, object> dict = new Dictionary<string, object>();
+                var properties = this.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    dict[property.Name] = property.GetValue(this);
+                }
+                return dict;
             }
         }
     }

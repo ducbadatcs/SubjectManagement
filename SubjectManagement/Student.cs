@@ -4,37 +4,24 @@ namespace SubjectManagement
 {
     public class Student
     {
-        private string _name;
-        //private double _finishedCredits;
-
-        private List<Subject> _finishedSubjects;
 
         public Student(string name, List<Subject> finishedSubjects)
         {
-            this._name = name;
-            //this._finishedCredits = finishedCredits;
-            this._finishedSubjects = finishedSubjects;
+            this.Name = name;
 
+            this.FinishedSubjects = finishedSubjects;
         }
 
-        public string Name
-        {
-            get { return this._name; }
-            set { this._name = value; }
-        }
+        public string Name { get; set; }
 
-        public List<Subject> FinishedSubjects
-        {
-            get { return this._finishedSubjects; }
-            set { this._finishedSubjects = value; }
-        }
+        public List<Subject> FinishedSubjects { get; set; }
 
         public double NumberOfCreditsFinished
         {
             get
             {
                 double totalCredits = 0.0;
-                foreach (Subject subject in this._finishedSubjects)
+                foreach (Subject subject in this.FinishedSubjects)
                 {
                     totalCredits += subject.NumberOfCredits;
                 }
@@ -44,9 +31,9 @@ namespace SubjectManagement
 
         public bool IsEligibleFor(Subject subject)
         {
-            foreach (Subject s in _finishedSubjects)
+            foreach (Subject s in this.FinishedSubjects)
             {
-                if (!this._finishedSubjects.Contains(s))
+                if (!this.FinishedSubjects.Contains(s))
                 {
                     return false;
                 }

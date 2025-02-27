@@ -152,7 +152,7 @@ namespace SubjectManagement
                 connection.Open();
 
                 var insertObjectCommand = connection.CreateCommand();
-                insertObjectCommand.CommandText = $@"INSERT OR REPLACE INTO {this._name}({fieldNamesConcatenated}) VALUES ({this.ColumnPlaceholdersList});"; ;
+                insertObjectCommand.CommandText = $@"INSERT OR REPLACE INTO {this._name}({fieldNamesConcatenated}) VALUES ({this.ColumnPlaceholdersList});";
 
                 for (int i = 0; i < valueList.Count; i++)
                 {
@@ -202,20 +202,20 @@ namespace SubjectManagement
         /// <returns>The command to do the select, then we'll actually do it with a void.</returns>
         public string SelectCommand(
             List<string> columns = null,
-            Dictionary<string, string> conditions = null)
+            List<string> conditions = null
+        )
         {
             // filter out outlier columns
-            foreach (string columnName in conditions.Keys)
+            foreach (string columnName in conditions)
             {
                 if (!this._fields.ContainsKey(columnName))
                 {
-                    throw new System.Exception($"Invalid column: {columnName}");
-                    return "";
+                    throw new System.ArgumentException($"Invalid column: {columnName}");
                 }
             }
 
             columns = columns ?? new List<string>() { "*" };
-            conditions = conditions ?? new Dictionary<string, string>() { };
+            conditions = conditions ?? new List<string>() { };
 
             // if we already have "*", why do we need anything else?
 
@@ -229,24 +229,19 @@ namespace SubjectManagement
                 selector = "(" + string.Join(",", columns) + ")";
             }
 
-            List<string> fullConditions = new List<string>();
-            foreach (KeyValuePair<string, string> condition in conditions)
-            {
-                fullConditions.Add(condition.Key + " " + condition.Value);
-            }
-
             string filter = "";
-            if (fullConditions.Count > 0)
+            if (conditions.Count > 0)
             {
                 // need the space because otherwise it's just not gonna work
-                filter = " WHERE " + string.Join(" AND ", fullConditions);
+                filter = " WHERE " + string.Join(" AND ", conditions);
             }
 
             return $"SELECT {selector} FROM {this._name} {filter}";
         }
 
-        public void Select(List<string> columns = null,
-            Dictionary<string, string> conditions = null)
+        public void Select(
+            List<string> columns = null,
+            List<string> conditions = null)
         {
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
