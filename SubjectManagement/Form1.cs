@@ -1,34 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SubjectManagement
 {
     public partial class Form1 : Form
     {
-        public void ShowException(Exception ex, string sqlCommand = "")
-        {
-            string error = "";
-
-            if (sqlCommand.Length > 0)
-            {
-                error += "Error while trying to execute SQL Command: " + sqlCommand + "\n\n";
-            }
-            // this is 1000000 times better than pasting this exact same code everywhere
-            error += @"Message:" + ex.Message + "\n\nStack Trace:" + ex.StackTrace;
-            MessageBox.Show(
-                error, "Error");
-            StreamWriter writer = new StreamWriter("error.txt");
-            writer.WriteLine(error);
-            writer.Close();
-            Application.Exit();
-        }
-
         public Form1()
         {
-            //SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
             using (var connection = new SQLiteConnection("Data Source=subjects.db"))
             {
@@ -39,21 +20,6 @@ namespace SubjectManagement
                 connection.Open();
 
                 SubjectTable subjectTable = new SubjectTable();
-
-                var createTableCommand = connection.CreateCommand();
-                createTableCommand.CommandText = subjectTable.CreateCommand;
-
-                try
-                {
-                    createTableCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    ShowException(ex, createTableCommand.CommandText);
-                }
-
-
-                var command = connection.CreateCommand();
 
                 List<Subject> ls = new List<Subject>()
                 {
@@ -81,20 +47,16 @@ namespace SubjectManagement
                     }
                     catch (Exception ex)
                     {
-                        ShowException(ex, subjectTable.InsertCommand(subject.ObjectList));
+                        UtilityFunctions.ShowException(ex, subjectTable.InsertCommand(subject.ObjectList.Values.ToList()));
                     }
                 }
                 connection.Close();
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void buttonShowSubjects_Click(object sender, EventArgs e)
         {
+            SubjectTable subjectTable = new SubjectTable();
             using (var connection = new SQLiteConnection("Data Source=subjects.db"))
             {
                 connection.Open();
@@ -125,7 +87,7 @@ namespace SubjectManagement
 
                 catch (Exception ex)
                 {
-                    ShowException(ex);
+                    UtilityFunctions.ShowException(ex);
                 }
 
                 dataGridSubjects.DataSource = subjectList;
@@ -144,11 +106,11 @@ namespace SubjectManagement
 
             try
             {
-                subjectTable.ClearTable();
+                subjectTable.Delete();
             }
             catch (Exception ex)
             {
-                ShowException(ex, subjectTable.CreateCommand);
+                UtilityFunctions.ShowException(ex, subjectTable.CreateCommand);
             }
 
 

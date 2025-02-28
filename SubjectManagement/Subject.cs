@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace SubjectManagement
 {
@@ -11,14 +12,14 @@ namespace SubjectManagement
             string name,
             int numberOfCredits = 0,
             int requiredCredits = 0,
-            List<Subject> requiredSubjects = null
+            List<string> requiredSubjects = null
         )
         {
             this.Id = id;
             this.Name = name;
             this.NumberOfCredits = numberOfCredits;
             this.RequiredNumberOfCredits = requiredCredits;
-            this.RequiredSubjects = requiredSubjects ?? new List<Subject>();
+            this.RequiredSubjects = requiredSubjects ?? new List<string>();
         }
 
         public string Id { get; set; }
@@ -29,18 +30,19 @@ namespace SubjectManagement
 
         public int RequiredNumberOfCredits { get; set; }
 
-        public List<Subject> RequiredSubjects { get; set; }
+        public List<string> RequiredSubjects { get; set; }
 
         public string RequiredSubjectsIDs
         {
             get
             {
-                string x = "";
-                foreach (Subject subject in this.RequiredSubjects)
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (string subjectId in this.RequiredSubjects)
                 {
-                    x += subject.Id + " ";
+                    stringBuilder.Append($"{subjectId} ");
                 }
-                return x;
+                return stringBuilder.ToString();
             }
         }
 

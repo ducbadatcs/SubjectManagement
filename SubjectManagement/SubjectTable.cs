@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SubjectManagement
 {
@@ -17,11 +18,19 @@ namespace SubjectManagement
 
         public void InsertSubject(Subject subject)
         {
-            this.Insert(subject.ObjectList);
+            this.Insert(subject.ObjectList.Values.ToList());
+        }
+
+        public void DeleteSubject(Subject subject)
+        {
+            this.Delete(new List<string>() { $"ID = {subject.Id}" });
         }
 
 
+        public Subject SelectSingleSubject(Subject subject)
+        {
+            var selectResult = this.Select(conditions: new List<string>() { $"ID LIKE '%{subject.Id}%' " });
 
-
+        }
     }
 }
