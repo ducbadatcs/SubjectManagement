@@ -5,7 +5,8 @@ namespace SubjectManagement
 {
     public class Subject
     {
-        public Subject() { }
+        public Subject()
+        { }
 
         public Subject(
             string id,
@@ -43,23 +44,6 @@ namespace SubjectManagement
                     stringBuilder.Append($"{subjectId} ");
                 }
                 return stringBuilder.ToString();
-            }
-        }
-
-        /// <summary>
-        /// why
-        /// </summary>
-        public Dictionary<string, object> ObjectList
-        {
-            get
-            {
-                Dictionary<string, object> dict = new Dictionary<string, object>();
-                var properties = this.GetType().GetProperties();
-                foreach (var property in properties)
-                {
-                    dict[property.Name] = property.GetValue(this);
-                }
-                return dict;
             }
         }
     }

@@ -41,7 +41,7 @@ namespace SubjectManagement
                 result += v;
             }
             return result;
-
         }
     }
+
 }

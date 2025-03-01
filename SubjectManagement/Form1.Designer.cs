@@ -33,8 +33,9 @@ namespace SubjectManagement
             this.buttonShowSubjects = new System.Windows.Forms.Button();
             this.dataGridSubjects = new System.Windows.Forms.DataGridView();
             this.buttonClearTable = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxSubject = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.buttonSearchSubject = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,12 +69,12 @@ namespace SubjectManagement
             this.buttonClearTable.UseVisualStyleBackColor = true;
             this.buttonClearTable.Click += new System.EventHandler(this.buttonClearTable_Click);
             // 
-            // textBox1
+            // textBoxSubject
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 240);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(201, 22);
-            this.textBox1.TabIndex = 3;
+            this.textBoxSubject.Location = new System.Drawing.Point(12, 240);
+            this.textBoxSubject.Name = "textBoxSubject";
+            this.textBoxSubject.Size = new System.Drawing.Size(201, 22);
+            this.textBoxSubject.TabIndex = 3;
             // 
             // label1
             // 
@@ -85,13 +86,24 @@ namespace SubjectManagement
             this.label1.Text = "Find Subject by ID";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
+            // buttonSearchSubject
+            // 
+            this.buttonSearchSubject.Location = new System.Drawing.Point(12, 296);
+            this.buttonSearchSubject.Name = "buttonSearchSubject";
+            this.buttonSearchSubject.Size = new System.Drawing.Size(119, 61);
+            this.buttonSearchSubject.TabIndex = 5;
+            this.buttonSearchSubject.Text = "Search Subject";
+            this.buttonSearchSubject.UseVisualStyleBackColor = true;
+            this.buttonSearchSubject.Click += new System.EventHandler(this.buttonSearchSubject_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1254, 587);
+            this.Controls.Add(this.buttonSearchSubject);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxSubject);
             this.Controls.Add(this.buttonClearTable);
             this.Controls.Add(this.dataGridSubjects);
             this.Controls.Add(this.buttonShowSubjects);
@@ -114,8 +126,9 @@ namespace SubjectManagement
         private System.Windows.Forms.Button buttonShowSubjects;
         private System.Windows.Forms.DataGridView dataGridSubjects;
         private System.Windows.Forms.Button buttonClearTable;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxSubject;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonSearchSubject;
     }
 }
 

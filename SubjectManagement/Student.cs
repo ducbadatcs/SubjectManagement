@@ -4,7 +4,6 @@ namespace SubjectManagement
 {
     public class Student
     {
-
         public Student(string name, List<Subject> finishedSubjects)
         {
             this.Name = name;

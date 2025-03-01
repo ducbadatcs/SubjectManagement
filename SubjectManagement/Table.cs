@@ -99,12 +99,14 @@ namespace SubjectManagement
         /// <summary>
         /// this too
         /// </summary>
-        public Dictionary<string, string> Fields { get { return this._fields; } }
+        public Dictionary<string, string> Fields
+        { get { return this._fields; } }
 
         /// <summary>
         /// setter only because who renames a table?
         /// </summary>
-        public string Name { get { return this._name; } }
+        public string Name
+        { get { return this._name; } }
 
         public void Create()
         {
@@ -153,8 +155,6 @@ namespace SubjectManagement
             return $"DELETE FROM {this.Name} {filter}";
         }
 
-
-
         public void Insert(List<object> valueList)
         {
             using (var connection = new SQLiteConnection(this.ConnectionParam))
@@ -190,7 +190,6 @@ namespace SubjectManagement
 
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
-
                 var insertObjectCommand = connection.CreateCommand();
                 string placeholders = string.Join(", ", this.ColumnPlaceholdersList);
                 insertObjectCommand.CommandText = $@"INSERT INTO {this._name} ({fieldNamesConcatenated}) VALUES ({placeholders});";
@@ -209,21 +208,12 @@ namespace SubjectManagement
         /// </summary>
         /// <param name="conditions">Dictionary with a set of conditions: key for field name, value for condition</param>
         /// <returns>The command to do the select, then we'll actually do it with a void.</returns>
-        public string SelectCommand(
+        public string ReadCommand(
             List<string> columns = null,
             List<string> conditions = null,
             int limit = -1
         )
         {
-            // filter out outlier columns
-            foreach (string columnName in conditions)
-            {
-                if (!this._fields.ContainsKey(columnName))
-                {
-                    throw new System.ArgumentException($"Invalid column: {columnName}");
-                }
-            }
-
             // if no specific column, just get everything
             columns = columns ?? new List<string>() { "*" };
 
@@ -257,7 +247,7 @@ namespace SubjectManagement
             return $"SELECT {selector} FROM {this._name} {filter} ";
         }
 
-        public List<Dictionary<string, string>> Select(
+        public List<Dictionary<string, string>> Read(
                     List<string> columns = null,
                     List<string> conditions = null,
                     int limit = -1
@@ -266,8 +256,9 @@ namespace SubjectManagement
             List<Dictionary<string, string>> result = new List<Dictionary<string, string>>() { };
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
+                connection.Open();
                 var selectCommand = connection.CreateCommand();
-                selectCommand.CommandText = this.SelectCommand(columns, conditions, limit);
+                selectCommand.CommandText = this.ReadCommand(columns, conditions, limit);
 
                 try
                 {
@@ -283,6 +274,14 @@ namespace SubjectManagement
                                 ] = reader.IsDBNull(i) ? null : reader.GetString(i);
                         }
                         result.Add(rowObject);
+
+                        // limit = -1 assumes that this won't happen except overflow,
+                        // because if your database have like 2 billion
+                        // elements, you have other issues
+                        if (result.Count == limit)
+                        {
+                            break;
+                        }
                     }
                 }
                 catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
@@ -290,6 +289,53 @@ namespace SubjectManagement
             return result;
         }
 
+        public List<Dictionary<string, string>> ReadAll(
+            List<string> columns = null,
+                    List<string> conditions = null)
+        {
+            return Read(columns, conditions, -1);
+        }
 
+        public Dictionary<string, string> ReadOne(
+            List<string> columns = null,
+                    List<string> conditions = null)
+        {
+            var result = Read(columns, conditions, 1);
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>();
+        }
+
+        //read object
+
+        public List<T> ReadObject<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1
+        ) where T : class, new()
+        {
+            var rows = this.Read(columns, conditions, limit);
+            List<T> values = new List<T>();
+            foreach (var row in rows)
+            {
+                values.Add(ObjectFunctions.DictToObject<T>(ObjectFunctions.AutoConvert(row)));
+            }
+            return values;
+        }
+
+        public T ReadOneObject<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1) where T : class, new()
+        {
+            var rows = ReadObject<T>(columns, conditions, 1);
+            return (rows.Count > 0) ? rows[0] : null;
+        }
+
+        public List<T> ReadAllObjects<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1) where T : class, new()
+        {
+            return ReadObject<T>(columns, conditions, -1);
+        }
     }
 }

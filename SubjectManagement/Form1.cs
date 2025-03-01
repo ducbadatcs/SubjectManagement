@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace SubjectManagement
@@ -26,28 +25,27 @@ namespace SubjectManagement
                     new Subject("COS10004", "Computer System"),
                     new Subject("COS10009", "Introduction to Programming"),
                     new Subject("COS10026", "Computing Technology something project"),
-                    new Subject("COS20031", "suffering", requiredSubjects: new List<Subject>()
+                    new Subject("COS20031", "suffering", requiredSubjects: new List<string>()
                     {
-                        new Subject("COS10009", "Introduction to Programming"),
+                        "COS10009"
                     }),
-                    new Subject("COS20007", "OOP", requiredSubjects: new List<Subject>()
+                    new Subject("COS20007", "OOP", requiredSubjects: new List<string>()
                     {
-                        new Subject("COS10009", "Introduction to Programming"),
-                    })
+                        "COS10009"
+                    }),
                 };
-
-
 
                 foreach (Subject subject in ls)
                 {
-
                     try
                     {
                         subjectTable.InsertSubject(subject);
                     }
                     catch (Exception ex)
                     {
-                        UtilityFunctions.ShowException(ex, subjectTable.InsertCommand(subject.ObjectList.Values.ToList()));
+                        UtilityFunctions.ShowException(
+                            ex,
+                            subjectTable.InsertCommand(ObjectFunctions.ObjectPropertyValues(subject)));
                     }
                 }
                 connection.Close();
@@ -59,44 +57,8 @@ namespace SubjectManagement
             SubjectTable subjectTable = new SubjectTable();
             using (var connection = new SQLiteConnection("Data Source=subjects.db"))
             {
-                connection.Open();
-
-                var readCommand = connection.CreateCommand();
-                readCommand.CommandText =
-                @"
-                    SELECT * FROM subjects
-                ";
-
-                List<Subject> subjectList = new List<Subject>();
-
-                try
-                {
-                    var reader = readCommand.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Subject s = new Subject(
-                            reader["ID"].ToString(),
-                            reader["NAME"].ToString(),
-                            int.Parse(reader["NUMBER_OF_CREDITS"].ToString()),
-                            int.Parse(reader["REQUIRED_NUMBER_OF_CREDITS"].ToString())
-                        // don't worry we construct the list later
-                        );
-                        subjectList.Add(s);
-                    }
-                }
-
-                catch (Exception ex)
-                {
-                    UtilityFunctions.ShowException(ex);
-                }
-
-                dataGridSubjects.DataSource = subjectList;
-
-                // double check
-
-
+                dataGridSubjects.DataSource = subjectTable.AllSubjects;
                 dataGridSubjects.Refresh();
-                connection.Close();
             }
         }
 
@@ -113,7 +75,6 @@ namespace SubjectManagement
                 UtilityFunctions.ShowException(ex, subjectTable.CreateCommand);
             }
 
-
             dataGridSubjects.DataSource = null; // ah yes
             dataGridSubjects.Rows.Clear();
             dataGridSubjects.Refresh();
@@ -121,7 +82,17 @@ namespace SubjectManagement
 
         private void label1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("why are you clicking this nonsense you fucking dumbass");
+            MessageBox.Show("why are you clicking this nonsense you fucking dumbass", "you just got MEMED!");
+        }
+
+        private void buttonSearchSubject_Click(object sender, EventArgs e)
+        {
+            string id = textBoxSubject.Text;
+            SubjectTable subjectTable = new SubjectTable();
+            var foundSubjects = subjectTable.FindSubjectById(id);
+
+            dataGridSubjects.DataSource = new List<Subject>() { foundSubjects };
+            dataGridSubjects.Refresh();
         }
     }
 }
