@@ -85,12 +85,12 @@ namespace SubjectManagement
                     return "";
                 }
 
-                StringBuilder typeListBuilder = new StringBuilder();
+            List<string> typeList = new List<string>();
                 foreach (var pair in this._fields)
                 {
-                    typeListBuilder.AppendLine($"{pair.Key} {pair.Value} NOT NULL,");
+                    typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
                 }
-                string typeListString = typeListBuilder.ToString().TrimEnd(',');
+                string typeListString = string.Join(",\n", typeList);
 
                 return $@"CREATE TABLE IF NOT EXISTS {this._name}(
                     {typeListString}
