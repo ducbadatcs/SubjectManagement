@@ -19,6 +19,7 @@ namespace SubjectManagement
                 connection.Open();
 
                 SubjectTable subjectTable = new SubjectTable();
+                subjectTable.Delete();
 
                 List<Subject> ls = new List<Subject>()
                 {
@@ -72,7 +73,7 @@ namespace SubjectManagement
             }
             catch (Exception ex)
             {
-                UtilityFunctions.ShowException(ex, subjectTable.CreateCommand());
+                UtilityFunctions.ShowException(ex);
             }
 
             dataGridSubjects.DataSource = null; // ah yes
@@ -93,6 +94,11 @@ namespace SubjectManagement
 
             dataGridSubjects.DataSource = new List<Subject>() { foundSubjects };
             dataGridSubjects.Refresh();
+        }
+
+        private void buttonOpenCrashLog_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("cmd.exe");
         }
     }
 }

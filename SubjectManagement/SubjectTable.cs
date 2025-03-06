@@ -15,14 +15,11 @@ namespace SubjectManagement
             })
         { }
 
-        public string InsertObjectCommand(Subject subject)
-        {
-            return this.InsertObjectCommand<Subject>(subject);
-        }
+
 
         public void InsertSubject(Subject subject)
         {
-            this.Insert(ObjectFunctions.ObjectPropertyValues(subject));
+            this.InsertObject(subject);
         }
 
         public void DeleteSubject(Subject subject)

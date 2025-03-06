@@ -62,7 +62,7 @@ namespace SubjectManagement
                 List<string> valuePlaceholdersList = new List<string>();
                 foreach (string key in this._fields.Keys)
                 {
-                    valuePlaceholdersList.Add("$" + key.ToLower());
+                    valuePlaceholdersList.Add("@" + key.ToLower());
                 }
 
                 return valuePlaceholdersList;
@@ -75,25 +75,6 @@ namespace SubjectManagement
         public string ConnectionParam
         {
             get { return $"Data Source={this._name}.db"; }
-        }
-
-        public string CreateCommand()
-        {
-            if (this._fields is null || this._fields.Count == 0)
-            {
-                return "";
-            }
-
-            List<string> typeList = new List<string>();
-            foreach (var pair in this._fields)
-            {
-                typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
-            }
-            string typeListString = string.Join(",\n", typeList);
-
-            return $@"CREATE TABLE IF NOT EXISTS {this._name}(
-                    {typeListString}
-                );";
         }
 
         /// <summary>
@@ -110,17 +91,33 @@ namespace SubjectManagement
 
         public void Create()
         {
+
+            if (this._fields is null || this._fields.Count == 0)
+            {
+                throw new ArgumentException("Invalid fields!");
+            }
+
+            List<string> typeList = new List<string>();
+            foreach (var pair in this._fields)
+            {
+                typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
+            }
+            string typeListString = string.Join(",\n", typeList);
+
+            string createCommandText = $@"CREATE TABLE IF NOT EXISTS {this._name}(
+                    {typeListString});";
+
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 connection.Open();
 
                 var createTableCommand = connection.CreateCommand();
-                createTableCommand.CommandText = this.CreateCommand();
+                createTableCommand.CommandText = createCommandText;
 
                 try { createTableCommand.ExecuteNonQuery(); }
                 catch (Exception ex)
                 {
-                    throw new SQLiteException($"Exception on command: {createTableCommand.CommandText}\n Error: {ex.Message}");
+                    UtilityFunctions.ShowException(ex, createTableCommand.CommandText);
                 }
 
                 connection.Close();
@@ -132,7 +129,8 @@ namespace SubjectManagement
         /// </summary>
         /// <param name="conditions">list of conditions to remove values</param>
         /// <returns></returns>
-        public string DeleteCommand(List<string> conditions = null)
+
+        public void Delete(List<string> conditions = null)
         {
             conditions = conditions ?? new List<string>();
             string filter = "";
@@ -141,20 +139,19 @@ namespace SubjectManagement
                 // need the space because otherwise it's just not gonna work
                 filter = " WHERE " + string.Join(" AND ", conditions);
             }
-            return $"DELETE FROM {this.Name} {filter}";
-        }
+            string deleteCommandText = $"DELETE FROM {this.Name} {filter}";
 
-        public void Delete(List<string> conditions = null)
-        {
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 connection.Open();
 
-                var clearTableCommand = connection.CreateCommand();
-                clearTableCommand.CommandText = this.DeleteCommand(conditions);
+                var deleteTableCommand = connection.CreateCommand();
+                deleteTableCommand.CommandText = deleteCommandText;
 
-                try { clearTableCommand.ExecuteNonQuery(); }
-                catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
+                try { deleteTableCommand.ExecuteNonQuery(); }
+                catch (Exception ex) {
+                    UtilityFunctions.ShowException(ex, deleteCommandText);
+                }
                 connection.Close();
             }
         }
@@ -179,12 +176,12 @@ namespace SubjectManagement
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 var insertObjectCommand = connection.CreateCommand();
-                string placeholders = string.Join(", ", this.ColumnPlaceholdersList);
+                string placeholders = string.Join(" , ", this.ColumnPlaceholdersList);
                 insertObjectCommand.CommandText = $@"INSERT INTO {this._name} ({fieldNamesConcatenated}) VALUES ({placeholders});";
 
                 for (int i = 0; i < valueList.Count; i++)
                 {
-                    insertObjectCommand.Parameters.AddWithValue(columnNames[i], paramValues[i]);
+                    insertObjectCommand.Parameters.AddWithValue(this.ColumnPlaceholdersList[i], paramValues[i]);
                 }
 
                 return insertObjectCommand.CommandText;
@@ -193,45 +190,46 @@ namespace SubjectManagement
 
         public void Insert(List<object> valueList)
         {
+            if (valueList == null || valueList.Count != this._fields.Count)
+            {
+                throw new ArgumentException("Invalid parameter set");
+            }
+
+            List<string> columnNames = this.ColumnNames;
+
+            List<string> paramValues = new List<string>();
+            foreach (object value in valueList)
+            {
+                paramValues.Add(value.ToString());
+            }
+
+            string fieldNamesConcatenated = string.Join(", ", this._fields.Keys);
+
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 connection.Open();
-
                 var insertObjectCommand = connection.CreateCommand();
-                insertObjectCommand.CommandText = this.InsertCommand(valueList);
+                string placeholders = string.Join(" , ", this.ColumnPlaceholdersList);
+                insertObjectCommand.CommandText = $@"INSERT INTO {this._name} ({fieldNamesConcatenated}) VALUES ({placeholders});";
+
+                for (int i = 0; i < valueList.Count; i++)
+                {
+                    insertObjectCommand.Parameters.AddWithValue(this.ColumnPlaceholdersList[i], paramValues[i]);
+                }
 
                 try { insertObjectCommand.ExecuteNonQuery(); }
-                catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
+                catch (Exception ex) {
+                    UtilityFunctions.ShowException(ex, insertObjectCommand.CommandText);
+                }
 
                 connection.Close();
             }
-        }
-
-        public string InsertObjectCommand<T>(T t) where T : class, new()
-        {
-            return this.InsertCommand(ObjectFunctions.ObjectPropertyValues(t));
         }
 
         public void InsertObject<T>(T t) where T : class, new()
         {
-            using (var connection = new SQLiteConnection(this.ConnectionParam))
-            {
-                connection.Open();
-
-                var insertObjectCommand = connection.CreateCommand();
-                insertObjectCommand.CommandText = this.InsertObjectCommand<T>(t);
-
-                try
-                {
-                    insertObjectCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    throw new SQLiteException(ex.ToString());
-                }
-
-                connection.Close();
-            }
+            var debug = ObjectFunctions.ObjectPropertyValues(t);
+            this.Insert(debug);
         }
 
         /// <summary>
@@ -239,11 +237,12 @@ namespace SubjectManagement
         /// </summary>
         /// <param name="conditions">Dictionary with a set of conditions: key for field name, value for condition</param>
         /// <returns>The command to do the select, then we'll actually do it with a void.</returns>
-        public string ReadCommand(
-            List<string> columns = null,
-            List<string> conditions = null,
-            int limit = -1
-        )
+
+        public List<Dictionary<string, string>> Read(
+                    List<string> columns = null,
+                    List<string> conditions = null,
+                    int limit = -1
+                )
         {
             // if no specific column, just get everything
             columns = columns ?? new List<string>() { "*" };
@@ -275,21 +274,13 @@ namespace SubjectManagement
                 filter += $" LIMIT {limit}";
             }
 
-            return $"SELECT {selector} FROM {this._name} {filter} ";
-        }
-
-        public List<Dictionary<string, string>> Read(
-                    List<string> columns = null,
-                    List<string> conditions = null,
-                    int limit = -1
-                )
-        {
+            string readCommandText = $"SELECT {selector} FROM {this._name} {filter} ";
             List<Dictionary<string, string>> result = new List<Dictionary<string, string>>() { };
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 connection.Open();
                 var selectCommand = connection.CreateCommand();
-                selectCommand.CommandText = this.ReadCommand(columns, conditions, limit);
+                selectCommand.CommandText = readCommandText ;
 
                 try
                 {
@@ -300,9 +291,7 @@ namespace SubjectManagement
                         Dictionary<string, string> rowObject = new Dictionary<string, string>();
                         for (int i = 0; i < numberOfColumns; i++)
                         {
-                            rowObject[
-                                UtilityFunctions.ConvertSnakeCaseToPascalCase(this.ColumnNames[i])
-                                ] = reader.IsDBNull(i) ? null : reader.GetString(i);
+                            rowObject[this.ColumnNames[i]] = reader.IsDBNull(i) ? null : reader.GetString(i);
                         }
                         result.Add(rowObject);
 
@@ -315,7 +304,7 @@ namespace SubjectManagement
                         }
                     }
                 }
-                catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
+                catch (Exception ex) { UtilityFunctions.ShowException(ex, readCommandText); }
             }
             return result;
         }

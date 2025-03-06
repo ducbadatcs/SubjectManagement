@@ -8,20 +8,15 @@ namespace SubjectManagement
     {
         public static void ShowException(Exception ex, string sqlCommand = "")
         {
-            string error = "";
-
-            if (sqlCommand.Length > 0)
-            {
-                error += "Error while trying to execute SQL Command: " + sqlCommand + "\n\n";
-            }
-            // this is 1000000 times better than pasting this exact same code everywhere
-            error += @"Message:" + ex.Message + "\n\nStack Trace:" + ex.StackTrace;
+            string error = $"Exception on command: {sqlCommand}\n\n " +
+                        $"Error: {ex.Message}\n\n" +
+                        $"Stack Trace: {ex.StackTrace}";
             MessageBox.Show(
                 error, "Error");
             StreamWriter writer = new StreamWriter("error.txt");
             writer.WriteLine(error);
             writer.Close();
-            Application.Exit();
+            
         }
 
         /// <summary>

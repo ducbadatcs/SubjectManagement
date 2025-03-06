@@ -36,6 +36,7 @@ namespace SubjectManagement
             this.textBoxSubject = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonSearchSubject = new System.Windows.Forms.Button();
+            this.buttonOpenCrashLog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).BeginInit();
             this.SuspendLayout();
             // 
@@ -96,11 +97,22 @@ namespace SubjectManagement
             this.buttonSearchSubject.UseVisualStyleBackColor = true;
             this.buttonSearchSubject.Click += new System.EventHandler(this.buttonSearchSubject_Click);
             // 
+            // buttonOpenCrashLog
+            // 
+            this.buttonOpenCrashLog.Location = new System.Drawing.Point(12, 513);
+            this.buttonOpenCrashLog.Name = "buttonOpenCrashLog";
+            this.buttonOpenCrashLog.Size = new System.Drawing.Size(119, 61);
+            this.buttonOpenCrashLog.TabIndex = 6;
+            this.buttonOpenCrashLog.Text = "Open Crash Log";
+            this.buttonOpenCrashLog.UseVisualStyleBackColor = true;
+            this.buttonOpenCrashLog.Click += new System.EventHandler(this.buttonOpenCrashLog_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1254, 587);
+            this.Controls.Add(this.buttonOpenCrashLog);
             this.Controls.Add(this.buttonSearchSubject);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxSubject);
@@ -129,6 +141,7 @@ namespace SubjectManagement
         private System.Windows.Forms.TextBox textBoxSubject;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonSearchSubject;
+        private System.Windows.Forms.Button buttonOpenCrashLog;
     }
 }
 
