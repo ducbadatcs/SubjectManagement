@@ -79,20 +79,19 @@ namespace SubjectManagement
 
         public string CreateCommand()
         {
-            
-                if (this._fields is null || this._fields.Count == 0)
-                {
-                    return "";
-                }
+            if (this._fields is null || this._fields.Count == 0)
+            {
+                return "";
+            }
 
             List<string> typeList = new List<string>();
-                foreach (var pair in this._fields)
-                {
-                    typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
-                }
-                string typeListString = string.Join(",\n", typeList);
+            foreach (var pair in this._fields)
+            {
+                typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
+            }
+            string typeListString = string.Join(",\n", typeList);
 
-                return $@"CREATE TABLE IF NOT EXISTS {this._name}(
+            return $@"CREATE TABLE IF NOT EXISTS {this._name}(
                     {typeListString}
                 );";
         }
@@ -119,7 +118,10 @@ namespace SubjectManagement
                 createTableCommand.CommandText = this.CreateCommand();
 
                 try { createTableCommand.ExecuteNonQuery(); }
-                catch (Exception ex) { throw new SQLiteException(ex.Message); }
+                catch (Exception ex)
+                {
+                    throw new SQLiteException($"Exception on command: {createTableCommand.CommandText}\n Error: {ex.Message}");
+                }
 
                 connection.Close();
             }
@@ -156,8 +158,6 @@ namespace SubjectManagement
                 connection.Close();
             }
         }
-
-        
 
         public string InsertCommand(List<object> valueList)
         {
@@ -207,11 +207,32 @@ namespace SubjectManagement
             }
         }
 
-        public string InsertObjectCommand<T>(T t)
+        public string InsertObjectCommand<T>(T t) where T : class, new()
         {
             return this.InsertCommand(ObjectFunctions.ObjectPropertyValues(t));
         }
-        
+
+        public void InsertObject<T>(T t) where T : class, new()
+        {
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+
+                var insertObjectCommand = connection.CreateCommand();
+                insertObjectCommand.CommandText = this.InsertObjectCommand<T>(t);
+
+                try
+                {
+                    insertObjectCommand.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    throw new SQLiteException(ex.ToString());
+                }
+
+                connection.Close();
+            }
+        }
 
         /// <summary>
         /// Return the set of all rows with full values that satisfies the conditions required

@@ -5,6 +5,8 @@ namespace SubjectManagement
 {
     public class Subject
     {
+        private List<string> _requiredSubjects;
+
         public Subject()
         { }
 
@@ -14,13 +16,13 @@ namespace SubjectManagement
             int numberOfCredits = 0,
             int requiredCredits = 0,
             List<string> requiredSubjects = null
-        )
+                      )
         {
             this.Id = id;
             this.Name = name;
             this.NumberOfCredits = numberOfCredits;
             this.RequiredNumberOfCredits = requiredCredits;
-            this.RequiredSubjects = requiredSubjects ?? new List<string>();
+            this._requiredSubjects = requiredSubjects ?? new List<string>();
         }
 
         public string Id { get; set; }
@@ -31,7 +33,7 @@ namespace SubjectManagement
 
         public int RequiredNumberOfCredits { get; set; }
 
-        public List<string> RequiredSubjects { get; set; }
+        //public List<string> RequiredSubjects { get; set; }
 
         public string RequiredSubjectsIDs
         {
@@ -39,7 +41,7 @@ namespace SubjectManagement
             {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                foreach (string subjectId in this.RequiredSubjects)
+                foreach (string subjectId in this._requiredSubjects)
                 {
                     stringBuilder.Append($"{subjectId} ");
                 }
