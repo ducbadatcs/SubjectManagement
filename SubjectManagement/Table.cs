@@ -37,6 +37,9 @@ namespace SubjectManagement
             {
                 this._fields[pair.Key.ToUpper()] = pair.Value.ToUpper();
             }
+
+            // ensure we can work away
+            this.Create();
         }
 
         public List<string> ColumnNames
