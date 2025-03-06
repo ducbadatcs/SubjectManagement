@@ -72,7 +72,7 @@ namespace SubjectManagement
             }
             catch (Exception ex)
             {
-                UtilityFunctions.ShowException(ex, subjectTable.CreateCommand);
+                UtilityFunctions.ShowException(ex, subjectTable.CreateCommand());
             }
 
             dataGridSubjects.DataSource = null; // ah yes

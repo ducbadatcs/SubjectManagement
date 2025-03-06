@@ -77,10 +77,9 @@ namespace SubjectManagement
             get { return $"Data Source={this._name}.db"; }
         }
 
-        public string CreateCommand
+        public string CreateCommand()
         {
-            get
-            {
+            
                 if (this._fields is null || this._fields.Count == 0)
                 {
                     return "";
@@ -96,7 +95,6 @@ namespace SubjectManagement
                 return $@"CREATE TABLE IF NOT EXISTS {this._name}(
                     {typeListString}
                 );";
-            }
         }
 
         /// <summary>
@@ -118,25 +116,11 @@ namespace SubjectManagement
                 connection.Open();
 
                 var createTableCommand = connection.CreateCommand();
-                createTableCommand.CommandText = this.CreateCommand;
+                createTableCommand.CommandText = this.CreateCommand();
+
                 try { createTableCommand.ExecuteNonQuery(); }
                 catch (Exception ex) { throw new SQLiteException(ex.Message); }
 
-                connection.Close();
-            }
-        }
-
-        public void Delete(List<string> conditions = null)
-        {
-            using (var connection = new SQLiteConnection(this.ConnectionParam))
-            {
-                connection.Open();
-
-                var clearTableCommand = connection.CreateCommand();
-                clearTableCommand.CommandText = this.DeleteCommand(conditions);
-
-                try { clearTableCommand.ExecuteNonQuery(); }
-                catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
                 connection.Close();
             }
         }
@@ -158,21 +142,22 @@ namespace SubjectManagement
             return $"DELETE FROM {this.Name} {filter}";
         }
 
-        public void Insert(List<object> valueList)
+        public void Delete(List<string> conditions = null)
         {
             using (var connection = new SQLiteConnection(this.ConnectionParam))
             {
                 connection.Open();
 
-                var insertObjectCommand = connection.CreateCommand();
-                insertObjectCommand.CommandText = this.InsertCommand(valueList);
+                var clearTableCommand = connection.CreateCommand();
+                clearTableCommand.CommandText = this.DeleteCommand(conditions);
 
-                try { insertObjectCommand.ExecuteNonQuery(); }
+                try { clearTableCommand.ExecuteNonQuery(); }
                 catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
-
                 connection.Close();
             }
         }
+
+        
 
         public string InsertCommand(List<object> valueList)
         {
@@ -205,6 +190,28 @@ namespace SubjectManagement
                 return insertObjectCommand.CommandText;
             }
         }
+
+        public void Insert(List<object> valueList)
+        {
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+
+                var insertObjectCommand = connection.CreateCommand();
+                insertObjectCommand.CommandText = this.InsertCommand(valueList);
+
+                try { insertObjectCommand.ExecuteNonQuery(); }
+                catch (Exception ex) { throw new SQLiteException(ex.ToString()); }
+
+                connection.Close();
+            }
+        }
+
+        public string InsertObjectCommand<T>(T t)
+        {
+            return this.InsertCommand(ObjectFunctions.ObjectPropertyValues(t));
+        }
+        
 
         /// <summary>
         /// Return the set of all rows with full values that satisfies the conditions required
