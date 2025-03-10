@@ -61,6 +61,12 @@ namespace SubjectManagement
             }
             return result;
         }
+
+        public static string IR(string name)
+        {
+            // use the idea of IR: an representation that database / object can agree on
+            return name.Replace("_", "").ToUpper();
+        }
     }
 }
 

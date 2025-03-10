@@ -270,10 +270,10 @@ namespace SubjectManagement
                 filter = " WHERE " + string.Join(" AND ", conditions);
             }
 
-            //if (limit > 0)
-            //{
-            //    filter += $" LIMIT {limit}";
-            //}
+            if (limit > 0)
+            {
+                filter += $" LIMIT {limit}";
+            }
 
             string readCommandText = $"SELECT {selector} FROM {this._name} {filter} ";
             List<Dictionary<string, string>> result = new List<Dictionary<string, string>>() { };
@@ -292,7 +292,7 @@ namespace SubjectManagement
                         Dictionary<string, string> rowObject = new Dictionary<string, string>();
                         for (int i = 0; i < numberOfColumns; i++)
                         {
-                            rowObject[this.ColumnNames[i]] = reader.IsDBNull(i) ? null : reader.GetValue(i).ToString();
+                            rowObject[UtilityFunctions.IR(this.ColumnNames[i])] = reader.IsDBNull(i) ? null : reader.GetValue(i).ToString();
                         }
                         result.Add(rowObject);
 
@@ -300,10 +300,10 @@ namespace SubjectManagement
                         // because if your database have like 2 billion
                         // elements, you have other issues
 
-                        //if (limit > 0 && result.Count == limit)
-                        //{
-                        //    break;
-                        //}
+                        if (limit > 0 && result.Count == limit)
+                        {
+                            break;
+                        }
                     }
                 }
                 catch (Exception ex) { UtilityFunctions.ShowException(ex, readCommandText); }

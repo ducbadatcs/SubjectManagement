@@ -8,21 +8,33 @@ namespace SubjectManagement
 {
     public static class ObjectFunctions
     {
+        /// <summary>
+        /// why
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static T DictToObject<T>(Dictionary<string, object> dict)
             where T : class, new()
         {
+
             // get the type
             var resultObject = new T();
             var type = resultObject.GetType();
+
+
             foreach (var item in dict)
             {
-                var property = type.GetProperty(
-                    item.Key
-                );
-                if (!(property is null) && property.CanWrite)
+                foreach (var propertyName in 
+                    ObjectFunctions.ObjectToDict<T>(new T()).Keys)
                 {
-                    var convertedValue = Convert.ChangeType(item.Value, property.PropertyType);
-                    property.SetValue(resultObject, convertedValue, null);
+                    if (UtilityFunctions.IR(propertyName) 
+                        == UtilityFunctions.IR(item.Key))
+                    {
+                        type
+                            .GetProperty(propertyName)
+                            .SetValue(resultObject, item.Value, null);
+                    }
                 }
             }
             return resultObject;
