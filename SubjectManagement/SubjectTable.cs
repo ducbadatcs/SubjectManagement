@@ -19,7 +19,7 @@ namespace SubjectManagement
 
         public void InsertSubject(Subject subject)
         {
-            this.InsertObject(subject);
+            this.InsertObject<Subject>(subject);
         }
 
         public void DeleteSubject(Subject subject)

@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace SubjectManagement
 {
     public class Subject
     {
-        private List<string> _requiredSubjects;
+        private List<string> _requiredSubjects = new List<string>();
 
-        public Subject()
-        { }
+        public Subject() { }
 
         public Subject(
             string id,
             string name,
-            int numberOfCredits = 0,
-            int requiredCredits = 0,
+            double numberOfCredits = 0,
+            double requiredCredits = 0,
             List<string> requiredSubjects = null
                       )
         {
@@ -22,16 +22,23 @@ namespace SubjectManagement
             this.Name = name;
             this.NumberOfCredits = numberOfCredits;
             this.RequiredNumberOfCredits = requiredCredits;
-            this._requiredSubjects = requiredSubjects ?? new List<string>();
+            this._requiredSubjects = new List<string>() { };
+            if (!(requiredSubjects is null))
+            {
+                foreach (var subject in requiredSubjects)
+                {
+                    this._requiredSubjects.Add(subject);
+                }
+            }
         }
 
         public string Id { get; set; }
 
         public string Name { get; set; }
 
-        public int NumberOfCredits { get; set; }
+        public double NumberOfCredits { get; set; }
 
-        public int RequiredNumberOfCredits { get; set; }
+        public double RequiredNumberOfCredits { get; set; }
 
         //public List<string> RequiredSubjects { get; set; }
 
@@ -46,6 +53,16 @@ namespace SubjectManagement
                     stringBuilder.Append($"{subjectId} ");
                 }
                 return stringBuilder.ToString();
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    this._requiredSubjects = new List<string>();
+                    return;
+                }
+
+                this._requiredSubjects = new List<string>(value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             }
         }
     }

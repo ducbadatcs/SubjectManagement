@@ -1,0 +1,1018 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: *.cs
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+Form1.cs
+Form1.Designer.cs
+ObjectFunctions.cs
+Program.cs
+Student.cs
+Subject.cs
+SubjectTable.cs
+Table.cs
+UtilityFunctions.cs
+
+================================================================
+Files
+================================================================
+
+================
+File: Form1.cs
+================
+using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Windows.Forms;
+
+namespace SubjectManagement
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
+            {
+                // assign source for the grid
+
+                connection.Open();
+
+                SubjectTable subjectTable = new SubjectTable();
+                subjectTable.Delete();
+
+                List<Subject> ls = new List<Subject>()
+                {
+                    new Subject("COS10004", "Computer System", 12.5),
+                    new Subject("COS10009", "Introduction to Programming", 12.5, 0),
+                    new Subject("COS10026", "Computing Technology something project", 12.5),
+                    new Subject("COS20031", "suffering", 12.5, requiredSubjects: new List<string>()
+                    {
+                        "COS10009"
+                    }),
+                    new Subject("COS20007", "OOP", requiredSubjects: new List<string>()
+                    {
+                        "COS10009"
+                    }),
+                };
+
+                foreach (Subject subject in ls)
+                {
+                    try
+                    {
+                        subjectTable.InsertSubject(subject);
+                    }
+                    catch (Exception ex)
+                    {
+                        UtilityFunctions.ShowException(
+                            ex,
+                            subjectTable.InsertCommand(ObjectFunctions.ObjectPropertyValues(subject)));
+                    }
+                }
+                dataGridSubjects.DataSource = subjectTable;
+                connection.Close();
+            }
+        }
+
+        private void buttonShowSubjects_Click(object sender, EventArgs e)
+        {
+            SubjectTable subjectTable = new SubjectTable();
+            foreach (var subject in subjectTable.AllSubjects)
+            {
+                MessageBox.Show($"Subject {subject.Id} - {subject.Name} has required: '{subject.RequiredSubjectsIDs}'");
+            }
+            dataGridSubjects.DataSource = subjectTable.AllSubjects;
+            dataGridSubjects.Refresh();
+        }
+
+        private void buttonClearTable_Click(object sender, EventArgs e)
+        {
+            SubjectTable subjectTable = new SubjectTable();
+
+            try
+            {
+                subjectTable.Delete();
+            }
+            catch (Exception ex)
+            {
+                UtilityFunctions.ShowException(ex);
+            }
+
+            dataGridSubjects.DataSource = null; // ah yes
+            dataGridSubjects.Rows.Clear();
+            dataGridSubjects.Refresh();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("why are you clicking this nonsense you fucking dumbass", "you just got MEMED!");
+        }
+
+        private void buttonSearchSubject_Click(object sender, EventArgs e)
+        {
+            string id = textBoxSubject.Text;
+            SubjectTable subjectTable = new SubjectTable();
+            var foundSubjects = subjectTable.FindSubjectById(id);
+
+            dataGridSubjects.DataSource = new List<Subject>() { foundSubjects };
+            dataGridSubjects.Refresh();
+        }
+
+        private void buttonOpenCrashLog_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("cmd.exe");
+        }
+    }
+}
+
+================
+File: Form1.Designer.cs
+================
+using System;
+
+namespace SubjectManagement
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.buttonShowSubjects = new System.Windows.Forms.Button();
+            this.dataGridSubjects = new System.Windows.Forms.DataGridView();
+            this.buttonClearTable = new System.Windows.Forms.Button();
+            this.textBoxSubject = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.buttonSearchSubject = new System.Windows.Forms.Button();
+            this.buttonOpenCrashLog = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // buttonShowSubjects
+            // 
+            this.buttonShowSubjects.Location = new System.Drawing.Point(12, 13);
+            this.buttonShowSubjects.Name = "buttonShowSubjects";
+            this.buttonShowSubjects.Size = new System.Drawing.Size(119, 61);
+            this.buttonShowSubjects.TabIndex = 0;
+            this.buttonShowSubjects.Text = "Show Subjects";
+            this.buttonShowSubjects.UseVisualStyleBackColor = true;
+            this.buttonShowSubjects.Click += new System.EventHandler(this.buttonShowSubjects_Click);
+            // 
+            // dataGridSubjects
+            // 
+            this.dataGridSubjects.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridSubjects.Location = new System.Drawing.Point(293, 12);
+            this.dataGridSubjects.Name = "dataGridSubjects";
+            this.dataGridSubjects.RowHeadersWidth = 51;
+            this.dataGridSubjects.RowTemplate.Height = 24;
+            this.dataGridSubjects.Size = new System.Drawing.Size(949, 562);
+            this.dataGridSubjects.TabIndex = 1;
+            // 
+            // buttonClearTable
+            // 
+            this.buttonClearTable.Location = new System.Drawing.Point(12, 106);
+            this.buttonClearTable.Name = "buttonClearTable";
+            this.buttonClearTable.Size = new System.Drawing.Size(119, 61);
+            this.buttonClearTable.TabIndex = 2;
+            this.buttonClearTable.Text = "Clear Table";
+            this.buttonClearTable.UseVisualStyleBackColor = true;
+            this.buttonClearTable.Click += new System.EventHandler(this.buttonClearTable_Click);
+            // 
+            // textBoxSubject
+            // 
+            this.textBoxSubject.Location = new System.Drawing.Point(12, 240);
+            this.textBoxSubject.Name = "textBoxSubject";
+            this.textBoxSubject.Size = new System.Drawing.Size(201, 22);
+            this.textBoxSubject.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 205);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(115, 16);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Find Subject by ID";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // buttonSearchSubject
+            // 
+            this.buttonSearchSubject.Location = new System.Drawing.Point(12, 296);
+            this.buttonSearchSubject.Name = "buttonSearchSubject";
+            this.buttonSearchSubject.Size = new System.Drawing.Size(119, 61);
+            this.buttonSearchSubject.TabIndex = 5;
+            this.buttonSearchSubject.Text = "Search Subject";
+            this.buttonSearchSubject.UseVisualStyleBackColor = true;
+            this.buttonSearchSubject.Click += new System.EventHandler(this.buttonSearchSubject_Click);
+            // 
+            // buttonOpenCrashLog
+            // 
+            this.buttonOpenCrashLog.Location = new System.Drawing.Point(12, 513);
+            this.buttonOpenCrashLog.Name = "buttonOpenCrashLog";
+            this.buttonOpenCrashLog.Size = new System.Drawing.Size(119, 61);
+            this.buttonOpenCrashLog.TabIndex = 6;
+            this.buttonOpenCrashLog.Text = "Open Crash Log";
+            this.buttonOpenCrashLog.UseVisualStyleBackColor = true;
+            this.buttonOpenCrashLog.Click += new System.EventHandler(this.buttonOpenCrashLog_Click);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1254, 587);
+            this.Controls.Add(this.buttonOpenCrashLog);
+            this.Controls.Add(this.buttonSearchSubject);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBoxSubject);
+            this.Controls.Add(this.buttonClearTable);
+            this.Controls.Add(this.dataGridSubjects);
+            this.Controls.Add(this.buttonShowSubjects);
+            this.Name = "Form1";
+            this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Button buttonShowSubjects;
+        private System.Windows.Forms.DataGridView dataGridSubjects;
+        private System.Windows.Forms.Button buttonClearTable;
+        private System.Windows.Forms.TextBox textBoxSubject;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonSearchSubject;
+        private System.Windows.Forms.Button buttonOpenCrashLog;
+    }
+}
+
+================
+File: ObjectFunctions.cs
+================
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace SubjectManagement
+{
+    public static class ObjectFunctions
+    {
+        public static T DictToObject<T>(Dictionary<string, object> dict)
+            where T : class, new()
+        {
+            // get the type
+            var resultObject = new T();
+            var type = resultObject.GetType();
+            foreach (var item in dict)
+            {
+                var property = type.GetProperty(
+                    item.Key
+                );
+                if (!(property is null) && property.CanWrite)
+                {
+                    var convertedValue = Convert.ChangeType(item.Value, property.PropertyType);
+                    property.SetValue(resultObject, convertedValue, null);
+                }
+            }
+            return resultObject;
+        }
+
+        public static Dictionary<string, object> ObjectToDict(object obj, BindingFlags bindingAttributes = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+        {
+            return obj.GetType().GetProperties(bindingAttributes).ToDictionary
+            (
+                propInfo => propInfo.Name,
+                propInfo => propInfo.GetValue(obj, null)
+            );
+        }
+
+        public static List<string> ObjectPropertyNames(object obj)
+        {
+            return ObjectFunctions.ObjectToDict(obj).Keys.ToList();
+        }
+
+        public static List<object> ObjectPropertyValues(object obj)
+        {
+            return ObjectFunctions.ObjectToDict(obj).Values.ToList();
+        }
+
+        public static Dictionary<string, object> AutoConvert(
+            Dictionary<string, string> source,
+            List<Type> typeList = null)
+        {
+            // elementary types
+            typeList = typeList ?? new List<Type>() { typeof(bool), typeof(int), typeof(double), typeof(DateTime), typeof(string) };
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            foreach (KeyValuePair<string, string> pair in source)
+            {
+                object convertedObject = null;
+                foreach (var type in typeList)
+                {
+                    try
+                    {
+                        convertedObject = Convert.ChangeType(pair.Value, type);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
+                // it can be null, who tf cares
+                result[pair.Key] = convertedObject;
+            }
+            return result;
+        }
+    }
+}
+
+================
+File: Program.cs
+================
+using System;
+using System.Windows.Forms;
+
+namespace SubjectManagement
+{
+    internal static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+        }
+    }
+}
+
+================
+File: Student.cs
+================
+using System.Collections.Generic;
+
+namespace SubjectManagement
+{
+    public class Student
+    {
+        public Student(string name, List<Subject> finishedSubjects)
+        {
+            this.Name = name;
+
+            this.FinishedSubjects = finishedSubjects;
+        }
+
+        public string Name { get; set; }
+
+        public List<Subject> FinishedSubjects { get; set; }
+
+        public double NumberOfCreditsFinished
+        {
+            get
+            {
+                double totalCredits = 0.0;
+                foreach (Subject subject in this.FinishedSubjects)
+                {
+                    totalCredits += subject.NumberOfCredits;
+                }
+                return totalCredits;
+            }
+        }
+
+        public bool IsEligibleFor(Subject subject)
+        {
+            foreach (Subject s in this.FinishedSubjects)
+            {
+                if (!this.FinishedSubjects.Contains(s))
+                {
+                    return false;
+                }
+            }
+            return this.NumberOfCreditsFinished >= subject.RequiredNumberOfCredits;
+        }
+    }
+}
+
+================
+File: Subject.cs
+================
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SubjectManagement
+{
+    public class Subject
+    {
+        private List<string> _requiredSubjects = new List<string>();
+
+        public Subject() { }
+
+        public Subject(
+            string id,
+            string name,
+            double numberOfCredits = 0,
+            double requiredCredits = 0,
+            List<string> requiredSubjects = null
+                      )
+        {
+            this.Id = id;
+            this.Name = name;
+            this.NumberOfCredits = numberOfCredits;
+            this.RequiredNumberOfCredits = requiredCredits;
+            this._requiredSubjects = new List<string>() { };
+            if (!(requiredSubjects is null))
+            {
+                foreach (var subject in requiredSubjects)
+                {
+                    this._requiredSubjects.Add(subject);
+                }
+            }
+        }
+
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        public double NumberOfCredits { get; set; }
+
+        public double RequiredNumberOfCredits { get; set; }
+
+        //public List<string> RequiredSubjects { get; set; }
+
+        public string RequiredSubjectsIDs
+        {
+            get
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (string subjectId in this._requiredSubjects)
+                {
+                    stringBuilder.Append($"{subjectId} ");
+                }
+                return stringBuilder.ToString();
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    this._requiredSubjects = new List<string>();
+                    return;
+                }
+
+                this._requiredSubjects = new List<string>(value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            }
+        }
+    }
+}
+
+================
+File: SubjectTable.cs
+================
+using System.Collections.Generic;
+
+namespace SubjectManagement
+{
+    public class SubjectTable : Table
+    {
+        public SubjectTable() : base(
+            "subjects",
+            new Dictionary<string, string>() {
+                    {"ID", "TEXT PRIMARY KEY"},
+                    {"NAME", "TEXT"},
+                    {"NUMBER_OF_CREDITS", "REAL" },
+                    {"REQUIRED_NUMBER_OF_CREDITS", "REAL" },
+                    {"REQUIRED_SUBJECTS_IDS", "TEXT" }
+            })
+        { }
+
+
+
+        public void InsertSubject(Subject subject)
+        {
+            this.InsertObject<Subject>(subject);
+        }
+
+        public void DeleteSubject(Subject subject)
+        {
+            this.Delete(new List<string>() { $"ID = {subject.Id}" });
+        }
+
+        public Subject FindSubjectById(string id)
+        {
+            return this.ReadOneObject<Subject>(conditions: new List<string> { $" ID LIKE '%{id}%'" });
+        }
+
+        public List<Subject> AllSubjects
+        {
+            get
+            {
+                return this.ReadAllObjects<Subject>();
+            }
+        }
+    }
+}
+
+================
+File: Table.cs
+================
+using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Text;
+
+namespace SubjectManagement
+{
+    // make this out of pure convenience
+
+    /// <summary>
+    /// this class provides some interfaces and stuff to interact with a table,
+    /// including some stuff like insert, delete, select, the average CRUD stuff
+    /// </summary>
+    public class Table
+    {
+        private Dictionary<string, string> _fields;
+        private string _name;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name">Table Name</param>
+        /// <param name="fields">
+        /// Table Fields, in the form of a dictionary: with keys as field names,
+        /// values as types + extra conditions (e.g. primary keys)
+        /// </param>
+        public Table(string name, Dictionary<string, string> fields = null)
+        {
+            this._name = name;
+            this._fields = new Dictionary<string, string>() { };
+
+            // consistency is key
+
+            fields = fields ?? new Dictionary<string, string>() { };
+
+            foreach (KeyValuePair<string, string> pair in fields)
+            {
+                this._fields[pair.Key.ToUpper()] = pair.Value.ToUpper();
+            }
+
+            // ensure we can work away
+            this.Create();
+        }
+
+        public List<string> ColumnNames
+        {
+            get
+            {
+                List<string> columnNames = new List<string>();
+                foreach (string key in this._fields.Keys)
+                {
+                    columnNames.Add(key);
+                }
+                return columnNames;
+            }
+        }
+
+        public List<string> ColumnPlaceholdersList
+        {
+            get
+            {
+                List<string> valuePlaceholdersList = new List<string>();
+                foreach (string key in this._fields.Keys)
+                {
+                    valuePlaceholdersList.Add("$" + key.ToLower());
+                }
+
+                return valuePlaceholdersList;
+            }
+        }
+
+        /// <summary>
+        /// Used when connect to other place, convenience mainly
+        /// </summary>
+        public string ConnectionParam
+        {
+            get { return $"Data Source={this._name}.db"; }
+        }
+
+        /// <summary>
+        /// this too
+        /// </summary>
+        public Dictionary<string, string> Fields
+        { get { return this._fields; } }
+
+        /// <summary>
+        /// setter only because who renames a table?
+        /// </summary>
+        public string Name
+        { get { return this._name; } }
+
+        public void Create()
+        {
+
+            if (this._fields is null || this._fields.Count == 0)
+            {
+                throw new ArgumentException("Invalid fields!");
+            }
+
+            List<string> typeList = new List<string>();
+            foreach (var pair in this._fields)
+            {
+                typeList.Add($"{pair.Key} {pair.Value} NOT NULL");
+            }
+            string typeListString = string.Join(",\n", typeList);
+
+            string createCommandText = $@"CREATE TABLE IF NOT EXISTS {this._name}(
+                    {typeListString});";
+
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+
+                var createTableCommand = connection.CreateCommand();
+                createTableCommand.CommandText = createCommandText;
+
+                try { createTableCommand.ExecuteNonQuery(); }
+                catch (Exception ex)
+                {
+                    UtilityFunctions.ShowException(ex, createTableCommand.CommandText);
+                }
+
+                connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Remove
+        /// </summary>
+        /// <param name="conditions">list of conditions to remove values</param>
+        /// <returns></returns>
+
+        public void Delete(List<string> conditions = null)
+        {
+            conditions = conditions ?? new List<string>();
+            string filter = "";
+            if (conditions.Count > 0)
+            {
+                // need the space because otherwise it's just not gonna work
+                filter = " WHERE " + string.Join(" AND ", conditions);
+            }
+            string deleteCommandText = $"DELETE FROM {this.Name} {filter}";
+
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+
+                var deleteTableCommand = connection.CreateCommand();
+                deleteTableCommand.CommandText = deleteCommandText;
+
+                try { deleteTableCommand.ExecuteNonQuery(); }
+                catch (Exception ex) {
+                    UtilityFunctions.ShowException(ex, deleteCommandText);
+                }
+                connection.Close();
+            }
+        }
+
+        public string InsertCommand(List<object> valueList)
+        {
+            if (valueList == null || valueList.Count != this._fields.Count)
+            {
+                return "";
+            }
+
+            List<string> columnNames = this.ColumnNames;
+
+            List<string> paramValues = new List<string>();
+            foreach (object value in valueList)
+            {
+                paramValues.Add(value.ToString());
+            }
+
+            string fieldNamesConcatenated = string.Join(", ", this._fields.Keys);
+
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                var insertObjectCommand = connection.CreateCommand();
+                string placeholders = string.Join(" , ", this.ColumnPlaceholdersList);
+                insertObjectCommand.CommandText = $@"INSERT INTO {this._name} ({fieldNamesConcatenated}) VALUES ({placeholders});";
+
+                for (int i = 0; i < valueList.Count; i++)
+                {
+                    insertObjectCommand.Parameters.AddWithValue(this.ColumnPlaceholdersList[i], paramValues[i]);
+                }
+
+                return insertObjectCommand.CommandText;
+            }
+        }
+
+        public void Insert(List<object> valueList)
+        {
+            if (valueList == null || valueList.Count != this._fields.Count)
+            {
+                throw new ArgumentException("Invalid parameter set");
+            }
+
+            List<string> paramValues = new List<string>();
+            foreach (object value in valueList)
+            {
+                paramValues.Add(value.ToString());
+            }
+
+            string fieldNamesConcatenated = string.Join(", ", this._fields.Keys);
+
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+                var insertObjectCommand = connection.CreateCommand();
+                string placeholders = string.Join(" , ", this.ColumnPlaceholdersList);
+                insertObjectCommand.CommandText = $@"INSERT INTO {this._name} ({fieldNamesConcatenated}) VALUES ({placeholders});";
+
+                for (int i = 0; i < valueList.Count; i++)
+                {
+                    insertObjectCommand.Parameters.AddWithValue(
+                        this.ColumnPlaceholdersList[i],
+                        //insertObjectCommand.Parameters[i].ToString(),
+                        paramValues[i]);
+                }
+
+                try { insertObjectCommand.ExecuteNonQuery(); }
+                catch (Exception ex) {
+                    UtilityFunctions.ShowException(ex, insertObjectCommand.CommandText);
+                }
+
+                connection.Close();
+            }
+        }
+
+        public void InsertObject<T>(T t) where T : class, new()
+        {
+            var debug = ObjectFunctions.ObjectPropertyValues(t);
+            this.Insert(debug);
+        }
+
+        /// <summary>
+        /// Return the set of all rows with full values that satisfies the conditions required
+        /// </summary>
+        /// <param name="conditions">Dictionary with a set of conditions: key for field name, value for condition</param>
+        /// <returns>The command to do the select, then we'll actually do it with a void.</returns>
+
+        public List<Dictionary<string, string>> Read(
+                    List<string> columns = null,
+                    List<string> conditions = null,
+                    int limit = -1
+                )
+        {
+            // if no specific column, just get everything
+            columns = columns ?? new List<string>() { "*" };
+
+            // if no conditions, just assume anything
+            conditions = conditions ?? new List<string>() { };
+
+            // if we already have "*", why do we need anything else?
+
+            string selector = "";
+            if (columns.Contains("*"))
+            {
+                selector = "*";
+            }
+            else
+            {
+                selector = "(" + string.Join(",", columns) + ")";
+            }
+
+            string filter = "";
+            if (conditions.Count > 0)
+            {
+                // need the space because otherwise it's just not gonna work
+                filter = " WHERE " + string.Join(" AND ", conditions);
+            }
+
+            if (limit >= 0)
+            {
+                filter += $" LIMIT {limit}";
+            }
+
+            string readCommandText = $"SELECT {selector} FROM {this._name} {filter} ";
+            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>() { };
+            using (var connection = new SQLiteConnection(this.ConnectionParam))
+            {
+                connection.Open();
+                var selectCommand = connection.CreateCommand();
+                selectCommand.CommandText = readCommandText ;
+
+                try
+                {
+                    var reader = selectCommand.ExecuteReader();
+                    int numberOfColumns = this.ColumnNames.Count;
+                    while (reader.Read())
+                    {
+                        Dictionary<string, string> rowObject = new Dictionary<string, string>();
+                        for (int i = 0; i < numberOfColumns; i++)
+                        {
+                            rowObject[this.ColumnNames[i]] = reader.IsDBNull(i) ? null : reader.GetValue(i).ToString();
+                        }
+                        result.Add(rowObject);
+
+                        // limit = -1 assumes that this won't happen except overflow,
+                        // because if your database have like 2 billion
+                        // elements, you have other issues
+                        if (limit > 0 && result.Count == limit)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (Exception ex) { UtilityFunctions.ShowException(ex, readCommandText); }
+            }
+            return result;
+        }
+
+        public List<Dictionary<string, string>> ReadAll(
+            List<string> columns = null,
+            List<string> conditions = null)
+        {
+            return Read(columns, conditions, -1);
+        }
+
+        public Dictionary<string, string> ReadOne(
+            List<string> columns = null,
+                    List<string> conditions = null)
+        {
+            var result = Read(columns, conditions, 1);
+            return result.Count > 0 ? result[0] : new Dictionary<string, string>();
+        }
+
+        //read object
+
+        public List<T> ReadObject<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1
+        ) where T : class, new()
+        {
+            var rows = this.Read(columns, conditions, limit);
+            List<T> values = new List<T>();
+            try
+            {
+                foreach (var row in rows)
+                {
+                    values.Add(ObjectFunctions.DictToObject<T>(ObjectFunctions.AutoConvert(row)));
+                }
+            }
+            catch (Exception ex)
+            {
+                UtilityFunctions.ShowException(ex);
+            }
+            return values;
+        }
+
+        public T ReadOneObject<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1) where T : class, new()
+        {
+            var rows = ReadObject<T>(columns, conditions, 1);
+            return (rows.Count > 0) ? rows[0] : null;
+        }
+
+        public List<T> ReadAllObjects<T>(
+            List<string> columns = null,
+            List<string> conditions = null,
+            int limit = -1) where T : class, new()
+        {
+            return ReadObject<T>(columns, conditions, -1);
+        }
+    }
+}
+
+================
+File: UtilityFunctions.cs
+================
+using System;
+using System.IO;
+using System.Windows.Forms;
+
+namespace SubjectManagement
+{
+    public static class UtilityFunctions
+    {
+        public static void ShowException(Exception ex, string sqlCommand = "")
+        {
+            string error = $"Exception on command: {sqlCommand}\n\n " +
+                        $"Error: {ex.Message}\n\n" +
+                        $"Exception Type: {ex.GetType()}\n\n" +
+                        $"Stack Trace: {ex.StackTrace}";
+                         ;
+            MessageBox.Show(
+                error, "Error");
+            StreamWriter writer = new StreamWriter("error.txt");
+            writer.WriteLine(error);
+            writer.Close();
+            
+        }
+
+        /// <summary>
+        /// convert a name in uppercase SNAKE_CASE to PascalCase
+        /// used to convert SQL columns to objet property names
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string ConvertSnakeCaseToPascalCase(string name)
+        {
+            var spc = name.Split('_');
+            string result = "";
+            for (int i = 0; i < spc.Length; i++)
+            {
+                spc[i] = spc[i].Trim().ToLower();
+                // we don't have a method to ToUpper a char, fuck you
+                string v = spc[i][0].ToString().ToUpper() + spc[i].Substring(1);
+                result += v;
+            }
+            return result;
+        }
+    }
+
+}
+
+
+
+================================================================
+End of Codebase
+================================================================

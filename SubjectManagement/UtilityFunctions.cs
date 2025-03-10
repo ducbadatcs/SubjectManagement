@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SubjectManagement
@@ -10,7 +11,9 @@ namespace SubjectManagement
         {
             string error = $"Exception on command: {sqlCommand}\n\n " +
                         $"Error: {ex.Message}\n\n" +
+                        $"Exception Type: {ex.GetType()}\n\n" +
                         $"Stack Trace: {ex.StackTrace}";
+                         ;
             MessageBox.Show(
                 error, "Error");
             StreamWriter writer = new StreamWriter("error.txt");
@@ -20,7 +23,8 @@ namespace SubjectManagement
         }
 
         /// <summary>
-        /// convert a name in snake_case to PascalCase
+        /// convert a name in uppercase SNAKE_CASE to PascalCase
+        /// used to convert SQL columns to objet property names
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -37,6 +41,27 @@ namespace SubjectManagement
             }
             return result;
         }
-    }
 
+        // In UtilityFunctions.cs
+        public static string ConvertPascalToSnakeCase(string name)
+        {
+            string result = "";
+            foreach (char c in name)
+            {
+                if ('A' <= c && c <= 'Z')
+                {
+                    //result = (string)result.Append((char)(c - 'A' + 'a'));
+                    char x = (char)(c - 'A' + 'a');
+                    result += x.ToString();
+                }
+                else
+                {
+                    result += c.ToString();
+                }
+            }
+            return result;
+        }
+    }
 }
+
+

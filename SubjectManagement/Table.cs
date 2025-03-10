@@ -62,7 +62,7 @@ namespace SubjectManagement
                 List<string> valuePlaceholdersList = new List<string>();
                 foreach (string key in this._fields.Keys)
                 {
-                    valuePlaceholdersList.Add("@" + key.ToLower());
+                    valuePlaceholdersList.Add("$" + key.ToLower());
                 }
 
                 return valuePlaceholdersList;
@@ -195,8 +195,6 @@ namespace SubjectManagement
                 throw new ArgumentException("Invalid parameter set");
             }
 
-            List<string> columnNames = this.ColumnNames;
-
             List<string> paramValues = new List<string>();
             foreach (object value in valueList)
             {
@@ -214,7 +212,10 @@ namespace SubjectManagement
 
                 for (int i = 0; i < valueList.Count; i++)
                 {
-                    insertObjectCommand.Parameters.AddWithValue(this.ColumnPlaceholdersList[i], paramValues[i]);
+                    insertObjectCommand.Parameters.AddWithValue(
+                        this.ColumnPlaceholdersList[i],
+                        //insertObjectCommand.Parameters[i].ToString(),
+                        valueList[i]);
                 }
 
                 try { insertObjectCommand.ExecuteNonQuery(); }
@@ -228,7 +229,7 @@ namespace SubjectManagement
 
         public void InsertObject<T>(T t) where T : class, new()
         {
-            var debug = ObjectFunctions.ObjectPropertyValues(t);
+            var debug = ObjectFunctions.ObjectPropertyValues<T>(t);
             this.Insert(debug);
         }
 
@@ -269,10 +270,10 @@ namespace SubjectManagement
                 filter = " WHERE " + string.Join(" AND ", conditions);
             }
 
-            if (limit >= 0)
-            {
-                filter += $" LIMIT {limit}";
-            }
+            //if (limit > 0)
+            //{
+            //    filter += $" LIMIT {limit}";
+            //}
 
             string readCommandText = $"SELECT {selector} FROM {this._name} {filter} ";
             List<Dictionary<string, string>> result = new List<Dictionary<string, string>>() { };
@@ -291,17 +292,18 @@ namespace SubjectManagement
                         Dictionary<string, string> rowObject = new Dictionary<string, string>();
                         for (int i = 0; i < numberOfColumns; i++)
                         {
-                            rowObject[this.ColumnNames[i]] = reader.IsDBNull(i) ? null : reader.GetString(i);
+                            rowObject[this.ColumnNames[i]] = reader.IsDBNull(i) ? null : reader.GetValue(i).ToString();
                         }
                         result.Add(rowObject);
 
                         // limit = -1 assumes that this won't happen except overflow,
                         // because if your database have like 2 billion
                         // elements, you have other issues
-                        if (result.Count == limit)
-                        {
-                            break;
-                        }
+
+                        //if (limit > 0 && result.Count == limit)
+                        //{
+                        //    break;
+                        //}
                     }
                 }
                 catch (Exception ex) { UtilityFunctions.ShowException(ex, readCommandText); }
@@ -311,7 +313,7 @@ namespace SubjectManagement
 
         public List<Dictionary<string, string>> ReadAll(
             List<string> columns = null,
-                    List<string> conditions = null)
+            List<string> conditions = null)
         {
             return Read(columns, conditions, -1);
         }
@@ -334,9 +336,16 @@ namespace SubjectManagement
         {
             var rows = this.Read(columns, conditions, limit);
             List<T> values = new List<T>();
-            foreach (var row in rows)
+            try
             {
-                values.Add(ObjectFunctions.DictToObject<T>(ObjectFunctions.AutoConvert(row)));
+                foreach (var row in rows)
+                {
+                    values.Add(ObjectFunctions.DictToObject<T>(ObjectFunctions.AutoConvert(row)));
+                }
+            }
+            catch (Exception ex)
+            {
+                UtilityFunctions.ShowException(ex);
             }
             return values;
         }

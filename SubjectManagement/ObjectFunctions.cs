@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SubjectManagement
 {
@@ -15,7 +16,9 @@ namespace SubjectManagement
             var type = resultObject.GetType();
             foreach (var item in dict)
             {
-                var property = type.GetProperty(item.Key);
+                var property = type.GetProperty(
+                    item.Key
+                );
                 if (!(property is null) && property.CanWrite)
                 {
                     var convertedValue = Convert.ChangeType(item.Value, property.PropertyType);
@@ -25,23 +28,41 @@ namespace SubjectManagement
             return resultObject;
         }
 
-        public static Dictionary<string, object> ObjectToDict(object obj, BindingFlags bindingAttributes = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+        public static Dictionary<string, object> ObjectToDict<T>(
+            T t, 
+            BindingFlags bindingAttributes = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+            where T : class, new()
         {
-            return obj.GetType().GetProperties(bindingAttributes).ToDictionary
+            return t.GetType().GetProperties(bindingAttributes).ToDictionary
             (
                 propInfo => propInfo.Name,
-                propInfo => propInfo.GetValue(obj, null)
+                propInfo => propInfo.GetValue(t, null)
             );
         }
 
-        public static List<string> ObjectPropertyNames(object obj)
+        public static List<string> ObjectPropertyNames<T>(T t) 
+            where T : class, new()
         {
-            return ObjectFunctions.ObjectToDict(obj).Keys.ToList();
+            return ObjectFunctions.ObjectToDict(t).Keys.ToList();
         }
 
-        public static List<object> ObjectPropertyValues(object obj)
+        public static List<object> ObjectPropertyValues<T>(T t) 
+            where T : class, new()
         {
-            return ObjectFunctions.ObjectToDict(obj).Values.ToList();
+            return ObjectFunctions.ObjectToDict(t).Values.ToList();
+        }
+
+        public static List<List<object>> ObjectPropertyValuesList<T>(List<T> values) 
+            where T : class, new()
+        {
+            var result = new List<List<object>>();
+            foreach (T value in values)
+            {
+                result.Add(
+                    ObjectFunctions.ObjectPropertyValues<T>(value)
+                    );
+            }
+            return result;
         }
 
         public static Dictionary<string, object> AutoConvert(
@@ -49,7 +70,7 @@ namespace SubjectManagement
             List<Type> typeList = null)
         {
             // elementary types
-            typeList = typeList ?? new List<Type>() { typeof(bool), typeof(int), typeof(double), typeof(DateTime), typeof(string) };
+            typeList = typeList ?? new List<Type>() { typeof(bool), typeof(int), typeof(double), typeof(string) };
             Dictionary<string, object> result = new Dictionary<string, object>();
             foreach (KeyValuePair<string, string> pair in source)
             {
