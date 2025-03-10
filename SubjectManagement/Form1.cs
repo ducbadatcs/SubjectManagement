@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SubjectManagement
@@ -28,10 +29,6 @@ namespace SubjectManagement
         private void buttonShowSubjects_Click(object sender, EventArgs e)
         {
             SubjectTable subjectTable = new SubjectTable();
-            foreach (var subject in subjectTable.AllSubjects)
-            {
-                MessageBox.Show($"Subject {subject.Id} - {subject.Name} has required: '{subject.RequiredSubjectsIDs}'");
-            }
             dataGridSubjects.DataSource = subjectTable.AllSubjects;
             dataGridSubjects.Refresh();
         }

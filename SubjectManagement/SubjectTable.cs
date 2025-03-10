@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SubjectManagement
 {
@@ -36,7 +37,8 @@ namespace SubjectManagement
         {
             get
             {
-                return this.ReadAllObjects<Subject>();
+                return this.ReadAllObjects<Subject>()
+                    .OrderBy(subject => subject.Id).ToList();
             }
         }
 
