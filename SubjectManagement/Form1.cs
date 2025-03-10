@@ -17,38 +17,10 @@ namespace SubjectManagement
                 connection.Open();
 
                 SubjectTable subjectTable = new SubjectTable();
-                subjectTable.Delete();
 
-                List<Subject> ls = new List<Subject>()
-                {
-                    new Subject("COS10004", "Computer System", 12.5),
-                    new Subject("COS10009", "Introduction to Programming", 12.5, 0),
-                    new Subject("COS10026", "Computing Technology something project", 12.5),
-                    new Subject("COS20031", "suffering", 12.5, requiredSubjects: new List<string>()
-                    {
-                        "COS10009"
-                    }),
-                    new Subject("COS20007", "OOP", requiredSubjects: new List<string>()
-                    {
-                        "COS10009"
-                    }),
-                };
-
-                foreach (Subject subject in ls)
-                {
-                    try
-                    {
-                        subjectTable.InsertSubject(subject);
-                    }
-                    catch (Exception ex)
-                    {
-                        UtilityFunctions.ShowException(
-                            ex,
-                            subjectTable.InsertCommand(ObjectFunctions.ObjectPropertyValues<Subject>(subject)));
-                    }
-                }
                 dataGridSubjects.DataSource = 
                     subjectTable.AllSubjects;
+
                 connection.Close();
             }
         }
@@ -99,7 +71,13 @@ namespace SubjectManagement
 
         private void buttonOpenCrashLog_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("cmd.exe");
+            System.Diagnostics.Process.Start("notepad");
+        }
+
+        private void buttonAddNewSubject_Click(object sender, EventArgs e)
+        {
+            var formAddSubject = new FormAddSubject();
+            formAddSubject.ShowDialog();
         }
     }
 }

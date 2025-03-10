@@ -37,6 +37,7 @@ namespace SubjectManagement
             this.label1 = new System.Windows.Forms.Label();
             this.buttonSearchSubject = new System.Windows.Forms.Button();
             this.buttonOpenCrashLog = new System.Windows.Forms.Button();
+            this.buttonAddNewSubject = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,15 +104,26 @@ namespace SubjectManagement
             this.buttonOpenCrashLog.Name = "buttonOpenCrashLog";
             this.buttonOpenCrashLog.Size = new System.Drawing.Size(119, 61);
             this.buttonOpenCrashLog.TabIndex = 6;
-            this.buttonOpenCrashLog.Text = "Open Crash Log";
+            this.buttonOpenCrashLog.Text = "Open Notepad (for no reason)";
             this.buttonOpenCrashLog.UseVisualStyleBackColor = true;
             this.buttonOpenCrashLog.Click += new System.EventHandler(this.buttonOpenCrashLog_Click);
+            // 
+            // buttonAddNewSubject
+            // 
+            this.buttonAddNewSubject.Location = new System.Drawing.Point(12, 379);
+            this.buttonAddNewSubject.Name = "buttonAddNewSubject";
+            this.buttonAddNewSubject.Size = new System.Drawing.Size(119, 61);
+            this.buttonAddNewSubject.TabIndex = 7;
+            this.buttonAddNewSubject.Text = "Add Subject";
+            this.buttonAddNewSubject.UseVisualStyleBackColor = true;
+            this.buttonAddNewSubject.Click += new System.EventHandler(this.buttonAddNewSubject_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1254, 587);
+            this.Controls.Add(this.buttonAddNewSubject);
             this.Controls.Add(this.buttonOpenCrashLog);
             this.Controls.Add(this.buttonSearchSubject);
             this.Controls.Add(this.label1);
@@ -142,6 +154,7 @@ namespace SubjectManagement
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonSearchSubject;
         private System.Windows.Forms.Button buttonOpenCrashLog;
+        private System.Windows.Forms.Button buttonAddNewSubject;
     }
 }
 

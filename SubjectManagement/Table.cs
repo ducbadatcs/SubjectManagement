@@ -214,7 +214,6 @@ namespace SubjectManagement
                 {
                     insertObjectCommand.Parameters.AddWithValue(
                         this.ColumnPlaceholdersList[i],
-                        //insertObjectCommand.Parameters[i].ToString(),
                         valueList[i]);
                 }
 

@@ -39,5 +39,18 @@ namespace SubjectManagement
                 return this.ReadAllObjects<Subject>();
             }
         }
+
+        public List<string> AllSubjectsIDs
+        {
+            get
+            {
+                List<string> result = new List<string>();
+                foreach (Subject subject in this.AllSubjects)
+                {
+                    result.Add(subject.Id);
+                }
+                return result;
+            }
+        }
     }
 }
