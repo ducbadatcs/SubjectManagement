@@ -55,13 +55,15 @@ namespace SubjectManagement
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                this._requiredSubjects.Clear();
+                if (!string.IsNullOrEmpty(value))
                 {
-                    this._requiredSubjects = new List<string>();
-                    return;
+                    string[] ids = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string id in ids)
+                    {
+                        this._requiredSubjects.Add(id.Trim());
+                    }
                 }
-
-                this._requiredSubjects = new List<string>(value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             }
         }
     }

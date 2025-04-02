@@ -8,28 +8,19 @@ namespace SubjectManagement
 {
     public partial class Form1 : Form
     {
+        public Student student = new Student("Hoàng Minh Đức", new SubjectTable());
+        
         public Form1()
         {
+            MessageBox.Show($"Hello, student {student.Name}!");
             InitializeComponent();
-            using (var connection = new SQLiteConnection("Data Source=subjects.db"))
-            {
-                // assign source for the grid
-
-                connection.Open();
-
-                SubjectTable subjectTable = new SubjectTable();
-
-                dataGridSubjects.DataSource = 
-                    subjectTable.AllSubjects;
-
-                connection.Close();
-            }
         }
 
         private void buttonShowSubjects_Click(object sender, EventArgs e)
         {
             SubjectTable subjectTable = new SubjectTable();
-            dataGridSubjects.DataSource = subjectTable.AllSubjects;
+            dataGridSubjects.DataSource = subjectTable.AllSubjects();
+
             dataGridSubjects.Refresh();
         }
 
@@ -47,7 +38,7 @@ namespace SubjectManagement
             }
 
             dataGridSubjects.DataSource = null; // ah yes
-            dataGridSubjects.Rows.Clear();
+            //dataGridSubjects.Rows.Clear();
             dataGridSubjects.Refresh();
         }
 
@@ -59,10 +50,8 @@ namespace SubjectManagement
         private void buttonSearchSubject_Click(object sender, EventArgs e)
         {
             string id = textBoxSubject.Text;
-            SubjectTable subjectTable = new SubjectTable();
-            var foundSubjects = subjectTable.FindSubjectById(id);
 
-            dataGridSubjects.DataSource = new List<Subject>() { foundSubjects };
+            dataGridSubjects.DataSource = (new SubjectTable()).FindSubjectById(id);
             dataGridSubjects.Refresh();
         }
 
@@ -75,6 +64,7 @@ namespace SubjectManagement
         {
             var formAddSubject = new FormAddSubject();
             formAddSubject.ShowDialog();
+            buttonShowSubjects_Click(sender, e);
         }
     }
 }

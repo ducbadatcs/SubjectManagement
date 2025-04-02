@@ -314,7 +314,7 @@ namespace SubjectManagement
             List<string> columns = null,
             List<string> conditions = null)
         {
-            return Read(columns, conditions, -1);
+            return Read(columns, conditions, -1) ?? new List<Dictionary<string, string>>();
         }
 
         public Dictionary<string, string> ReadOne(

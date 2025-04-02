@@ -38,7 +38,11 @@ namespace SubjectManagement
             this.buttonSearchSubject = new System.Windows.Forms.Button();
             this.buttonOpenCrashLog = new System.Windows.Forms.Button();
             this.buttonAddNewSubject = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonShowSubjects
@@ -54,11 +58,11 @@ namespace SubjectManagement
             // dataGridSubjects
             // 
             this.dataGridSubjects.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridSubjects.Location = new System.Drawing.Point(293, 12);
+            this.dataGridSubjects.Location = new System.Drawing.Point(237, 56);
             this.dataGridSubjects.Name = "dataGridSubjects";
             this.dataGridSubjects.RowHeadersWidth = 51;
             this.dataGridSubjects.RowTemplate.Height = 24;
-            this.dataGridSubjects.Size = new System.Drawing.Size(949, 562);
+            this.dataGridSubjects.Size = new System.Drawing.Size(591, 206);
             this.dataGridSubjects.TabIndex = 1;
             // 
             // buttonClearTable
@@ -100,7 +104,7 @@ namespace SubjectManagement
             // 
             // buttonOpenCrashLog
             // 
-            this.buttonOpenCrashLog.Location = new System.Drawing.Point(12, 513);
+            this.buttonOpenCrashLog.Location = new System.Drawing.Point(12, 557);
             this.buttonOpenCrashLog.Name = "buttonOpenCrashLog";
             this.buttonOpenCrashLog.Size = new System.Drawing.Size(119, 61);
             this.buttonOpenCrashLog.TabIndex = 6;
@@ -114,15 +118,46 @@ namespace SubjectManagement
             this.buttonAddNewSubject.Name = "buttonAddNewSubject";
             this.buttonAddNewSubject.Size = new System.Drawing.Size(119, 61);
             this.buttonAddNewSubject.TabIndex = 7;
-            this.buttonAddNewSubject.Text = "Add Subject";
+            this.buttonAddNewSubject.Text = "Add Subject To Database";
             this.buttonAddNewSubject.UseVisualStyleBackColor = true;
             this.buttonAddNewSubject.Click += new System.EventHandler(this.buttonAddNewSubject_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(234, 13);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(119, 16);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Available Subjects";
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(237, 390);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersWidth = 51;
+            this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.Size = new System.Drawing.Size(591, 228);
+            this.dataGridView1.TabIndex = 9;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(234, 357);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(90, 16);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Your Subjects";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1254, 587);
+            this.ClientSize = new System.Drawing.Size(1022, 630);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.buttonAddNewSubject);
             this.Controls.Add(this.buttonOpenCrashLog);
             this.Controls.Add(this.buttonSearchSubject);
@@ -135,6 +170,7 @@ namespace SubjectManagement
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridSubjects)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,6 +179,7 @@ namespace SubjectManagement
         private void Form1_Load(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
+            buttonShowSubjects_Click(sender, e);
         }
 
         #endregion
@@ -155,6 +192,9 @@ namespace SubjectManagement
         private System.Windows.Forms.Button buttonSearchSubject;
         private System.Windows.Forms.Button buttonOpenCrashLog;
         private System.Windows.Forms.Button buttonAddNewSubject;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Label label3;
     }
 }
 

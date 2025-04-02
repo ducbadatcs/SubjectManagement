@@ -24,7 +24,7 @@ namespace SubjectManagement
 
         private void buttonAddSubject_Click(object sender, EventArgs e)
         {
-            // get the text from all the form, and try to construct the Subject with that
+
             // first we check the numeric types:
 
             float numberOfCredits = 0.0f;
@@ -60,10 +60,8 @@ namespace SubjectManagement
                     {
                         MessageBox.Show($"The subject with ID {subjectId} is not available!");
                         return;
-                    }
+                    }   
                 }
-            
-
             
             subjectTable.InsertSubject(new Subject(
                 subjectIDTextBox.Text,

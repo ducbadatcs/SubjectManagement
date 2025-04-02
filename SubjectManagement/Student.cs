@@ -4,11 +4,10 @@ namespace SubjectManagement
 {
     public class Student
     {
-        public Student(string name, SubjectTable finishedSubjects)
+        public Student(string name, SubjectTable finishedSubjects = null)
         {
             this.Name = name;
-
-            this.FinishedSubjects = finishedSubjects;
+            this.FinishedSubjects = finishedSubjects ?? new SubjectTable();
         }
 
         public string Name { get; set; }
@@ -20,7 +19,7 @@ namespace SubjectManagement
             get
             {
                 double totalCredits = 0.0;
-                foreach (Subject subject in this.FinishedSubjects.AllSubjects)
+                foreach (Subject subject in this.FinishedSubjects.AllSubjects())
                 {
                     totalCredits += subject.NumberOfCredits;
                 }
@@ -30,9 +29,9 @@ namespace SubjectManagement
 
         public bool IsEligibleFor(Subject subject)
         {
-            foreach (Subject s in this.FinishedSubjects.AllSubjects)
+            foreach (Subject s in this.FinishedSubjects.AllSubjects())
             {
-                if (!this.FinishedSubjects.AllSubjects.Contains(s))
+                if (!this.FinishedSubjects.AllSubjects().Contains(s))
                 {
                     return false;
                 }
