@@ -51,7 +51,7 @@ namespace SubjectManagement
                 }
             }
 
-            SubjectTable subjectTable = new SubjectTable();
+            SubjectTable subjectTable = new SubjectTable("subjects");
 
             
                 foreach (string subjectId in requiredSubjects)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -6,8 +7,8 @@ namespace SubjectManagement
 {
     public class SubjectTable : Table
     {
-        public SubjectTable() : base(
-            "subjects",
+        public SubjectTable(string dbName) : base(
+            dbName,
             new Dictionary<string, string>() {
                     {"ID", "TEXT PRIMARY KEY"},
                     {"NAME", "TEXT"},
@@ -19,12 +20,6 @@ namespace SubjectManagement
 
         public DataGridView DataGridView { set; get; }
 
-        public void RefreshDataGrid()
-        {
-            this.DataGridView.DataSource = this.AllSubjects();
-        }
- 	
-
         public void InsertSubject(Subject subject)
         {
             this.InsertObject<Subject>(subject);
@@ -33,15 +28,12 @@ namespace SubjectManagement
 
         public void DeleteSubject(Subject subject)
         {
-            this.Delete(new List<string>() { $"ID = {subject.Id}" });
-            
+            this.Delete(new List<string>() { $"ID = '{subject.Id}' " });
         }
 
         public Subject FindSubjectById(string id)
         {
             Subject subject = this.ReadOneObject<Subject>(conditions: new List<string> { $" ID LIKE '%{id}%'" });
-            this.DataGridView.DataSource = subject;
-            this.DataGridView.Refresh();
             return subject;
         }
 

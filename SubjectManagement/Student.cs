@@ -7,7 +7,7 @@ namespace SubjectManagement
         public Student(string name, SubjectTable finishedSubjects = null)
         {
             this.Name = name;
-            this.FinishedSubjects = finishedSubjects ?? new SubjectTable();
+            this.FinishedSubjects = finishedSubjects ?? new SubjectTable(name);
         }
 
         public string Name { get; set; }
